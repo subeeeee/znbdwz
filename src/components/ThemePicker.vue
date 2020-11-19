@@ -55,7 +55,7 @@ export default {
       this.$store.commit('UPDATE_COLOUR', {colour: this.theme})
     }
   },
-  props: ['user'],
+  props: ['tenantId'],
   created () {
     // const theme = localStorage.getItem('theme')
     // if (theme) {
