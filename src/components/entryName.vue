@@ -44,7 +44,7 @@ export default {
           value: ''
         })
         list.push({
-          label: '无',
+          label: '无注册来源',
           value: '0'
         })
       }else if(this.from === 'distribute'){
