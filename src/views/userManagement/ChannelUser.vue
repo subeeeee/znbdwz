@@ -137,7 +137,7 @@
       </div>
     </div>
     <!-- dialog -->
-    <el-dialog title="渠道管理" :visible.sync="channelPop" width="1100px" @close="resetForm('channelForm')">
+    <el-dialog :title="channelDialogType === '01' ? '添加渠道' : '删除渠道'" :visible.sync="channelPop" width="1100px" @close="resetForm('channelForm')">
       <el-form>
         <el-form-item style="padding-left:10px;">
           <el-checkbox v-model="channelForm.multiLogin">是否允许多设备登录</el-checkbox>
@@ -153,20 +153,24 @@
         <el-form-item label="渠道名称：" class="store-item" prop="channelName">
           <el-input v-model="channelForm.channelName" placeholder="渠道名称" maxlength="20"></el-input>
         </el-form-item>
-        <!--  -->
-        <div v-for="(item, index) in channelForm.channelPrincipals" :key="index">
-          <el-form-item label="负责人：" class="store-item" :prop="'channelPrincipals.' + index + '.principalName'" :rules="{required: true, message: '必填项不能为空', trigger: 'blur'}">
-            <el-input v-model="item.principalName" placeholder="负责人" maxlength="6"></el-input>
-          </el-form-item>
-          <el-form-item label="电话号码：" class="store-item" :prop="'channelPrincipals.' + index + '.principalMobile'" :rules="[{required: true, message: '必填项不能为空'}, {type: 'number', min: 10000000000, max: 19999999999, message: '请输入正确的电话号码', trigger: ['blur', 'change']}]">
-            <el-input v-model.number="item.principalMobile" placeholder="电话号码" maxlength="11"></el-input>
-            <div class="iconfont-block">
-              <span class="icon iconfont icon-shanjian" v-if="index === 0 && channelForm.channelPrincipals.length > 1" :style="{color: themeColor}" @click="delPrincipalMobile(index)"></span>
-              <span class="icon iconfont icon-zengjia" v-if="index === 0" :style="{color: themeColor}" @click="addPrincipalMobile"></span>
-              <span class="icon iconfont icon-shanjian" v-if="index > 0" :style="{color: themeColor}" @click="delPrincipalMobile(index)"></span>
-            </div>
-          </el-form-item>
+        <!-- 不可编辑负责人 -->
+        <div v-if="channelDialogType === '01'">
+          <div v-for="(item, index) in channelForm.channelPrincipals" :key="index">
+            <el-form-item label="负责人：" class="store-item" :prop="'channelPrincipals.' + index + '.principalName'" :rules="{required: true, message: '必填项不能为空', trigger: 'blur'}">
+              <el-input v-model="item.principalName" placeholder="负责人" maxlength="6"></el-input>
+            </el-form-item>
+            <el-form-item label="电话号码：" class="store-item" :prop="'channelPrincipals.' + index + '.principalMobile'" :rules="[{required: true, message: '必填项不能为空'}, {type: 'number', min: 10000000000, max: 19999999999, message: '请输入正确的电话号码', trigger: ['blur', 'change']}]">
+              <el-input v-model.number="item.principalMobile" placeholder="电话号码" maxlength="11"></el-input>
+              <div class="iconfont-block">
+                <!--                新增渠道只添加一个负责人-->
+                <!--              <span class="icon iconfont icon-shanjian" v-if="index === 0 && channelForm.channelPrincipals.length > 1" :style="{color: themeColor}" @click="delPrincipalMobile(index)"></span>-->
+                <!--              <span class="icon iconfont icon-zengjia" v-if="index === 0" :style="{color: themeColor}" @click="addPrincipalMobile"></span>-->
+                <!--              <span class="icon iconfont icon-shanjian" v-if="index > 0" :style="{color: themeColor}" @click="delPrincipalMobile(index)"></span>-->
+              </div>
+            </el-form-item>
+          </div>
         </div>
+
         <el-form-item label="授权项目：" class="authorized-project">
           <el-checkbox-group v-model="channelForm.projectIds">
             <el-checkbox :label="item.value" v-for="(item, index) in projectIdsData" :key="index">
@@ -280,6 +284,7 @@ export default {
         channelName: { required: true, validator: validateLength, trigger: 'blur' }
       },
       projectIdsData: [],
+      channelDialogType: '', //  添加:01  编辑:02
       channelIsDisabled: false,
       isStoreList: true,
       isUserList: false,
@@ -399,6 +404,7 @@ export default {
       }
     },
     addChannelManagement () {
+      this.channelDialogType = '01'
       this.channelIsDisabled = false
       this.channelForm.channelType = '' // 渠道类型
       this.channelForm.channelName = '' // 渠道名称
@@ -507,6 +513,7 @@ export default {
     },
     // 获取 渠道信息
     async getManagerAgencyTeamChannel (channelId) {
+      this.channelDialogType = '02'
       this.channelIsDisabled = true
       this.channelForm.channelId = channelId
       const result = await getManagerAgencyTeamChannel(`${channelId}/${sessionStorage.getItem('tenantId')}`)
