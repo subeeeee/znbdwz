@@ -63,7 +63,7 @@
         </el-main>
       </el-container>
     </el-container>
-    <ThemePicker :user='user'></ThemePicker>
+    <ThemePicker :tenantId='tenantId'></ThemePicker>
   </div>
 </template>
 

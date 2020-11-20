@@ -55,18 +55,19 @@ export default {
       this.$store.commit('UPDATE_COLOUR', {colour: this.theme})
     }
   },
-  props: ['user'],
+  props: ['tenantId'],
   created () {
     // const theme = localStorage.getItem('theme')
     // if (theme) {
     //   this.theme = theme
     // }
-    this.user && this.getTenantCustomization()
+    console.log(1)
+    this.tenantId && this.getTenantCustomization()
   },
   methods: {
     async getTenantCustomization () {
       let res = await requestWebsiteConfigGet({
-        tenantId: this.user.tenantId
+        tenantId: this.tenantId
       })
       res.data ? this.theme = res.data.themeColor : this.theme = '#0F8BE6'
     },
