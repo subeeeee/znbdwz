@@ -43,98 +43,117 @@
           </ul>
         </div>
       </div>
-      <div class="tab-cont" v-show="isStoreList">
-        <div class="main-title">
-          <span>渠道门店</span>
+
+
+	    <el-tabs  class="tab-cont-warp" v-model="tabsActiveName" type="card">
+		    <el-tab-pane label="渠道门店" name="channel">
+			    <div class="tab-cont" v-show="isStoreList">
+				    <div class="main-title">
           <span class="main-title-form">
             <el-button type="primary" @click="addStoreManagement" v-if="channelStatus === 0" icon="el-icon-plus">添加门店</el-button>
           </span>
-        </div>
-        <el-table :data="agencyTeamData" class="tab-cont-table" style="width: calc(100% - 30px);" :style="'border-top:2px solid' + themeColor">
-          <el-table-column prop="storeName" label="门店" width="200"></el-table-column>
-          <el-table-column prop="storePrincipalName" label="负责人" width="140"></el-table-column>
-          <el-table-column prop="storePrincipalMobile" label="电话号码" width="120"></el-table-column>
-          <el-table-column label="门店成员" width="100">
-            <template slot-scope="scope">
-              <el-button type="text" size="small" @click="managerAgencyTeamStoresAssistantsclick(scope.row)">{{scope.row.storeAssistantNum}}个</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column label="门店状态" width="100">
-            <template slot-scope="scope">
-              {{scope.row.storeStatus === 0 ? '启用' : '停用'}}
-            </template>
-          </el-table-column>
-          <el-table-column prop="name" label="管理">
-            <template slot-scope="scope" v-if="channelStatus === 0">
-              <el-dropdown trigger="click" size="small">
-                <el-button type="text" size="small">操作</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="changeAgencyTeamStoresConfirm(scope.row)" v-if="scope.row.storeStatus === 0">停用</el-dropdown-item>
-                  <el-dropdown-item @click.native="changeAgencyTeamStoresConfirm(scope.row)" v-if="scope.row.storeStatus === -1">启用</el-dropdown-item>
-                  <el-dropdown-item @click.native="editStoreManagement(scope.row)">编辑</el-dropdown-item>
-                  <el-dropdown-item @click.native="deleteStoreInfo(scope.row)">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          @current-change="agencyTeamPageJump"
-          :current-page.sync="agencyTeamPage.currentPage"
-          :page-size="agencyTeamPage.pageSize"
-          layout="prev, pager, next, jumper"
-          :total="agencyTeamPage.total">
-        </el-pagination>
-      </div>
-      <div class="tab-cont" v-show="isUserList">
-        <div class="main-title">
-          <span>{{storeInfo.storeName}}</span>
-          <span class="main-title-form">
+				    </div>
+				    <el-table :data="agencyTeamData" class="tab-cont-table" style="width: calc(100% - 30px);" :style="'border-top:2px solid' + themeColor">
+					    <el-table-column prop="storeName" label="门店" width="200"></el-table-column>
+					    <el-table-column prop="storePrincipalName" label="门店店长" width="140"></el-table-column>
+					    <el-table-column prop="storePrincipalMobile" label="电话号码" width="120"></el-table-column>
+					    <el-table-column label="门店成员" width="100">
+						    <template slot-scope="scope">
+							    <el-button type="text" size="small" @click="managerAgencyTeamStoresAssistantsclick(scope.row)">{{scope.row.storeAssistantNum}}个</el-button>
+						    </template>
+					    </el-table-column>
+					    <!--          TODO 报备客户字段 11-->
+					    <el-table-column prop="storePrincipalMobile" label="报备客户" width="120"></el-table-column>
+					    <el-table-column label="门店状态" width="100">
+						    <template slot-scope="scope">
+							    {{scope.row.storeStatus === 0 ? '启用' : '停用'}}
+						    </template>
+					    </el-table-column>
+					    <el-table-column prop="name" label="管理">
+						    <template slot-scope="scope" v-if="channelStatus === 0">
+							    <el-dropdown trigger="click" size="small">
+								    <el-button type="text" size="small">操作</el-button>
+								    <el-dropdown-menu slot="dropdown">
+									    <el-dropdown-item @click.native="changeAgencyTeamStoresConfirm(scope.row)" v-if="scope.row.storeStatus === 0">停用</el-dropdown-item>
+									    <el-dropdown-item @click.native="changeAgencyTeamStoresConfirm(scope.row)" v-if="scope.row.storeStatus === -1">启用</el-dropdown-item>
+									    <el-dropdown-item @click.native="editStoreManagement(scope.row)">编辑</el-dropdown-item>
+									    <el-dropdown-item @click.native="deleteStoreInfo(scope.row)">删除</el-dropdown-item>
+								    </el-dropdown-menu>
+							    </el-dropdown>
+						    </template>
+					    </el-table-column>
+				    </el-table>
+				    <el-pagination
+					    @current-change="agencyTeamPageJump"
+					    :current-page.sync="agencyTeamPage.currentPage"
+					    :page-size="agencyTeamPage.pageSize"
+					    layout="prev, pager, next, jumper"
+					    :total="agencyTeamPage.total">
+				    </el-pagination>
+			    </div>
+			    <div class="tab-cont" v-show="isUserList">
+				    <div class="main-title">
+					    <span>{{storeInfo.storeName}}</span>
+					    <span class="main-title-form">
             <ul class="search-user">
               <li><el-input v-model.trim="searchStoreClerkData.name" placeholder="用户姓名" maxlength="50"></el-input></li>
               <li><el-input v-model.trim="searchStoreClerkData.mobile" placeholder="注册号码" maxlength="11"></el-input></li>
               <li><el-button type="primary" class="search-submit" @click="managerAgencyTeamStoresAssistants(false)" icon="el-icon-search">搜索</el-button></li>
             </ul>
           </span>
-        </div>
-        <el-table :data="storeClerkData" class="tab-cont-table" style="width: calc(100% - 30px);" :style="'border-top:2px solid' + themeColor">
-          <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-          <el-table-column label="性别" width="80">
-            <template slot-scope="scope">
-              {{scope.row.sex === 0 ? '男' : '女'}}
-            </template>
-          </el-table-column>
-          <el-table-column prop="mobile" label="注册号码" width="120"></el-table-column>
-          <el-table-column prop="roleTypeName" label="用户角色" width="90"></el-table-column>
-          <el-table-column prop="createTime" label="注册时间" width="160"></el-table-column>
-          <el-table-column prop="agencyStatusName" label="用户状态" width="90"></el-table-column>
-          <el-table-column label="有效客户" width="100">
-            <template slot-scope="scope">
-              {{scope.row.reportedNum}}个
-            </template>
-          </el-table-column>
-          <el-table-column label="管理" fixed="right">
-            <template slot-scope="scope" v-if="channelStatus === 0">
-              <el-dropdown trigger="click" size="small" v-show="storeStatusType === 0">
-                <el-button type="text" size="small">操作</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1">停用</el-dropdown-item>
-                  <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 0, '启用')" v-if="scope.row.agencyStatus === 2 || scope.row.agencyStatus === 0">启用</el-dropdown-item>
-                  <el-dropdown-item @click.native="deleteAccountsChannel(scope.row, 2)">删除</el-dropdown-item>
-                  <el-dropdown-item @click.native="userInformationPopFun(scope.row)">身份变更</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          @current-change="storeClerkPageJump"
-          :current-page.sync="storeClerkPage.currentPage"
-          :page-size="storeClerkPage.pageSize"
-          layout="prev, pager, next, jumper"
-          :total="storeClerkPage.total">
-        </el-pagination>
-      </div>
+				    </div>
+				    <el-table :data="storeClerkData" class="tab-cont-table" style="width: calc(100% - 30px);" :style="'border-top:2px solid' + themeColor">
+					    <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+					    <el-table-column label="性别" width="80">
+						    <template slot-scope="scope">
+							    {{scope.row.sex === 0 ? '男' : '女'}}
+						    </template>
+					    </el-table-column>
+					    <el-table-column prop="mobile" label="注册号码" width="120"></el-table-column>
+					    <el-table-column prop="roleTypeName" label="用户角色" width="90"></el-table-column>
+					    <el-table-column prop="createTime" label="注册时间" width="160"></el-table-column>
+					    <el-table-column prop="agencyStatusName" label="用户状态" width="90"></el-table-column>
+					    <!--          TODO 添加报备字段 22-->
+					    <el-table-column prop="agencyStatusName" label="报备客户" width="90"></el-table-column>
+					    <el-table-column label="有效客户" width="100">
+						    <template slot-scope="scope">
+							    {{scope.row.reportedNum}}个
+						    </template>
+					    </el-table-column>
+					    <el-table-column label="管理" fixed="right">
+						    <template slot-scope="scope" v-if="channelStatus === 0">
+							    <el-dropdown trigger="click" size="small" v-show="storeStatusType === 0">
+								    <el-button type="text" size="small">操作</el-button>
+								    <el-dropdown-menu slot="dropdown">
+									    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1">停用</el-dropdown-item>
+									    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 0, '启用')" v-if="scope.row.agencyStatus === 2 || scope.row.agencyStatus === 0">启用</el-dropdown-item>
+									    <el-dropdown-item @click.native="handleTransferCuster(scope.row)">客户转移</el-dropdown-item>
+									    <el-dropdown-item @click.native="deleteAccountsChannel(scope.row, 2)">删除</el-dropdown-item>
+									    <el-dropdown-item @click.native="userInformationPopFun(scope.row)">身份变更</el-dropdown-item>
+								    </el-dropdown-menu>
+							    </el-dropdown>
+						    </template>
+					    </el-table-column>
+				    </el-table>
+				    <el-pagination
+					    @current-change="storeClerkPageJump"
+					    :current-page.sync="storeClerkPage.currentPage"
+					    :page-size="storeClerkPage.pageSize"
+					    layout="prev, pager, next, jumper"
+					    :total="storeClerkPage.total">
+				    </el-pagination>
+			    </div>
+		    </el-tab-pane>
+		    <el-tab-pane label="负责人" name="principal">
+					<principal-table ref="principalTableRef" ></principal-table>
+		    </el-tab-pane>
+	    </el-tabs>
+
+
+
+
+
+
     </div>
     <!-- dialog -->
     <el-dialog :title="channelDialogType === '01' ? '添加渠道' : '删除渠道'" :visible.sync="channelPop" width="1100px" @close="resetForm('channelForm')">
@@ -190,17 +209,35 @@
         </el-row>
       </span>
     </el-dialog>
-    <el-dialog title="门店管理" :visible.sync="storePop" width="580px" @close="resetForm('addManagerAgencyTeamStoresData')">
+    <el-dialog title="门店管理" :visible.sync="storePop" width="650px" @close="resetForm('addManagerAgencyTeamStoresData')">
       <el-form :inline="true" :model="addManagerAgencyTeamStoresData" class="demo-form-inline" ref="addManagerAgencyTeamStoresData" :rules="addManagerAgencyTeamStoresDataVerification">
         <el-form-item label="门店名称：" class="store-name must-fill" prop="storeName">
-          <el-input v-model="addManagerAgencyTeamStoresData.storeName" placeholder="门店名称"></el-input>
+          <el-input v-model="addManagerAgencyTeamStoresData.storeName" placeholder="门店名称" style="width:480px"></el-input>
         </el-form-item>
-        <el-form-item label="门店店长：" class="must-fill" prop="storePrincipalName">
-          <el-input v-model="addManagerAgencyTeamStoresData.storePrincipalName" placeholder="门店店长"></el-input>
-        </el-form-item>
-        <el-form-item label="电话号码：" class="must-fill" prop="channelPrincipalMobile">
-          <el-input v-model="addManagerAgencyTeamStoresData.channelPrincipalMobile" placeholder="电话号码" :disabled="isChannelPrincipalMobile" maxlength="11"></el-input>
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="门店店长：" class="must-fill" prop="storePrincipalName">
+              <el-input v-model="addManagerAgencyTeamStoresData.storePrincipalName" placeholder="门店店长"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="电话号码：" class="must-fill" prop="channelPrincipalMobile">
+              <el-input v-model="addManagerAgencyTeamStoresData.channelPrincipalMobile" placeholder="电话号码" :disabled="isChannelPrincipalMobile" maxlength="11"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="店长查看客户：" class="must-fill" prop="managerCheckCustomerRule">
+              <el-radio-group v-model="addManagerAgencyTeamStoresData.managerCheckCustomerRule">
+                <el-radio label="01">全号查看</el-radio>
+                <el-radio label="02">隐号查看</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+
         <el-form-item label="授权项目：" class="authorized-project">
           <ul class="authorized-project-ul">
             <li v-for="(item, index) in managerAgencyTeamChannelTextArr" :key="index">{{item}}</li>
@@ -214,6 +251,7 @@
       </span>
     </el-dialog>
     <!--  -->
+
     <el-dialog title="用户信息" :visible.sync="userInformationPop" width="700px" class="userInformation-dialog">
       <el-form :inline="true" :model="userInformationForm" class="demo-form-inline identity">
         <el-form-item label="用户身份：" style="width:100%">
@@ -246,6 +284,7 @@
       </span>
     </el-dialog>
     <!--  -->
+    <transfer-custer-dialog ref="transferCusterDialogRef" :is-show.sync="isShowTransfer"></transfer-custer-dialog>
   </div>
 </template>
 
@@ -253,10 +292,19 @@
 import { managerAgencyTeamChannelChannelTypes, managerAgencyTeamChannelList, postManagerAgencyTeamChannel, putManagerAgencyTeamChannel, projectsProject, projectsManagerProject, getManagerAgencyTeamChannel, deleteManagerAgencyTeamChannel, managerAgencyTeamStores, addManagerAgencyTeamStores, editManagerAgencyTeamStores, managerAgencyTeamChannel, getManagerAgencyTeamStores, delManagerAgencyTeamStores, managerAgencyTeamStoresAssistants, accountsChannel, accountsIdentity, managerAgencyTeamChannelOptions, managerAgencyTeamStoresOptions, putAccountsIdentity, changeManagerAgencyTeamChannel, changeAgencyTeamStores } from '../../common/api'
 import entryName from '../../components/entryName'
 import { validateLength, validateMobile, validateSelect } from '../../common/fromVerification'
+import TransferCusterDialog from "./components/TransferCuster";
+import PrincipalTable from "./components/PrincipalTable";
 export default {
   name: 'ChannelUser',
-  data () {
+  components: {
+    TransferCusterDialog,
+	  PrincipalTable,
+    entryName
+  },
+  data() {
     return {
+	    tabsActiveName: 'principal',   // 渠道门店:channel 负责人:principal
+      isShowTransfer: false,
       search: {
         projectId: '',
         channelType: ''
@@ -305,12 +353,14 @@ export default {
         channelId: '', // 门店所属渠道
         storeName: '', // 门店名称
         storePrincipalName: '', // 门店负责人名称
-        channelPrincipalMobile: '' // 门店负责人手机号
+        channelPrincipalMobile: '', // 门店负责人手机号
+        managerCheckCustomerRule: '' // 店长查看客户
       },
       addManagerAgencyTeamStoresDataVerification: {
         storeName: { validator: validateLength, trigger: 'blur' },
         storePrincipalName: { validator: validateLength, trigger: 'blur' },
-        channelPrincipalMobile: { validator: validateMobile, trigger: 'blur' }
+        channelPrincipalMobile: { validator: validateMobile, trigger: 'blur' },
+        managerCheckCustomerRule: {required: true, message:'必填项不能为空'}
       },
       // 门店店员
       storeInfo: {}, // 门店信息
@@ -681,6 +731,15 @@ export default {
         this.$message.error(result.message)
       }
     },
+    handleTransferCuster(row) {
+      this.$confirm('此操作将转移选中用户下所有报备客户，且会更新客户报备人，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.isShowTransfer = true
+      })
+    },
     // 删除 店员 提示
     deleteAccountsChannel (scope, status) {
       this.$confirm('是否将该店员删除?', '提示', {
@@ -938,15 +997,12 @@ export default {
         this.$message.error(result.message)
       }
     }
-  },
-  components: {
-    entryName
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" scope>
 .identity{
   .el-form-item__content{
     max-width: calc(100% - 100px);
@@ -955,36 +1011,124 @@ export default {
     }
   }
 }
-.main-block{width:100%;height:600px;display:flex;
-  .main-title{height:50px;line-height:50px;padding:0 15px;position:relative;
-    span{font-size:14px;}
-    .main-title-form{position:absolute;right:15px;top:50%;transform: translate(0, -50%);
-      .el-button{padding:7px 15px;}
-      .search-user{display: flex;
-        li{padding-left:10px;
-          .el-button{padding:7px 15px;}
-        }
-      }
-    }
-  }
-  .tab-bar{width:280px;height:100%;background:#f7f7f7;margin-right:20px;padding-bottom:20px;box-sizing:border-box;
-    .tab-bar-cont{width:100%;height:calc(100% - 50px);overflow-y:auto;padding-top:2px;
-      .tab-bar-menu{
-        li{height:40px;line-height:40px;border:1px solid #dcdfe6;border-radius:4px;margin:0 15px 10px 15px;background:#fff;padding:0 10px;font-size:13px;color:#666;cursor: pointer;display:flex;justify-content:space-between;
-          span:first-child{width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-          span:last-child{text-align:right;display:block;width:100px;
-            i{font-size:18px;color:#ccc;}
-            i.icon-tingyong{color:#de5246;}
-            i.icon-qiyong{color:#1ba362}
-          }
-          &:hover,&.active{border:1px solid #999;box-shadow: 0 0 2px #999;}
-        }
-      }
-    }
-  }
-  .tab-cont{width:calc(100% - 300px);height:100%;background:#f7f7f7;
-    .tab-cont-table{margin:0 auto;border-top:2px solid #0f8be6;min-height:488px;max-height:500px;overflow-y: auto}
-  }
+
+.main-block {
+	width: 100%;
+	height: 600px;
+	display: flex;
+
+	.main-title {
+		height: 50px;
+		line-height: 50px;
+		padding: 0 15px;
+		position: relative;
+
+		span {
+			font-size: 14px;
+		}
+
+		.main-title-form {
+			position: absolute;
+			right: 15px;
+			top: 50%;
+			transform: translate(0, -50%);
+
+			.el-button {
+				padding: 7px 15px;
+			}
+
+			.search-user {
+				display: flex;
+
+				li {
+					padding-left: 10px;
+
+					.el-button {
+						padding: 7px 15px;
+					}
+				}
+			}
+		}
+	}
+
+	.tab-bar {
+		width: 280px;
+		height: 100%;
+		background: #f7f7f7;
+		margin-right: 20px;
+		padding-bottom: 20px;
+		box-sizing: border-box;
+
+		.tab-bar-cont {
+			width: 100%;
+			height: calc(100% - 50px);
+			overflow-y: auto;
+			padding-top: 2px;
+
+			.tab-bar-menu {
+				li {
+					height: 40px;
+					line-height: 40px;
+					border: 1px solid #dcdfe6;
+					border-radius: 4px;
+					margin: 0 15px 10px 15px;
+					background: #fff;
+					padding: 0 10px;
+					font-size: 13px;
+					color: #666;
+					cursor: pointer;
+					display: flex;
+					justify-content: space-between;
+
+					span:first-child {
+						width: 190px;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
+
+					span:last-child {
+						text-align: right;
+						display: block;
+						width: 100px;
+
+						i {
+							font-size: 18px;
+							color: #ccc;
+						}
+
+						i.icon-tingyong {
+							color: #de5246;
+						}
+
+						i.icon-qiyong {
+							color: #1ba362
+						}
+					}
+
+					&:hover, &.active {
+						border: 1px solid #999;
+						box-shadow: 0 0 2px #999;
+					}
+				}
+			}
+		}
+	}
+	.tab-cont-warp{
+		width: calc(100% - 300px);
+		flex: 1;
+		height: 100%;
+	}
+	.tab-cont {
+		background: #f7f7f7;
+
+		.tab-cont-table {
+			margin: 0 auto;
+			border-top: 2px solid #0f8be6;
+			height: 441px;
+			overflow-y: auto
+		}
+	}
 }
 .store-name{width: 100%;
   .el-form-item__content{width:422px;}
@@ -1024,4 +1168,13 @@ export default {
   .demo-form-inline{min-height:140px;}
 }
 .authorized-project .el-form-item__label{width:90px!important;}
+.el-tabs__header{
+	margin: 0!important;
+}
+.el-tabs__content{
+	height: 559px !important;
+	.el-tab-pane{
+		height: 100%;
+	}
+}
 </style>

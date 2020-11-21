@@ -61,7 +61,6 @@ export default {
     // if (theme) {
     //   this.theme = theme
     // }
-    console.log(1)
     this.tenantId && this.getTenantCustomization()
   },
   methods: {
@@ -70,6 +69,14 @@ export default {
         tenantId: this.tenantId
       })
       res.data ? this.theme = res.data.themeColor : this.theme = '#0F8BE6'
+      const style = document.createElement('style');
+      style.type = 'text/css';
+      style.appendChild(document.createTextNode(`
+        .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{color: ${this.theme} !important;background-color: transparent;}
+
+      `));
+      const head = document.getElementsByTagName('head')[0];
+      head.appendChild(style);
     },
     updateStyle (style, oldCluster, newCluster) {
       let newStyle = style
