@@ -18,29 +18,19 @@
     <div class="main-block">
       <div class="tab-bar">
         <div class="main-title">
-          <span>渠道名单</span>
+          <span>渠道列表</span>
           <span class="main-title-form">
-            <el-button type="primary" @click="addChannelManagement" icon="el-icon-plus">添加</el-button>
+            <el-dropdown trigger="click" size="small">
+              <el-button type="primary" icon="el-icon-plus">添加</el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="addChannelManagement">渠道</el-dropdown-item>
+                <el-dropdown-item @click.native="addStores">门店</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </span>
         </div>
         <div class="tab-bar-cont">
-          <ul class="tab-bar-menu">
-            <li v-show="teamChannelList.length > 0" v-for="(item, index) in teamChannelList" :key="index" :class="item.active ? 'active' : ''">
-              <span @click="tabBarFun(item)">{{item.label}}</span>
-              <span>
-                <el-dropdown trigger="click" size="small">
-                  <i class="icon iconfont icon-caidan"></i>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="getManagerAgencyTeamChannel(item.id)">编辑渠道</el-dropdown-item>
-                    <el-dropdown-item @click.native="ManagerAgencyTeamChannelConfirm(item)" v-if="item.channelStatus === 0">停用渠道</el-dropdown-item>
-                    <el-dropdown-item @click.native="ManagerAgencyTeamChannelConfirm(item)" v-if="item.channelStatus === -1">启用渠道</el-dropdown-item>
-                    <el-dropdown-item @click.native="deleteChannelInfo(item)">删除渠道</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span>
-            </li>
-            <span v-if="teamChannelList.length === 0" style="padding:15px;">暂无渠道</span>
-          </ul>
+          <channel-tree></channel-tree>
         </div>
       </div>
 
@@ -148,12 +138,6 @@
 					<principal-table ref="principalTableRef" ></principal-table>
 		    </el-tab-pane>
 	    </el-tabs>
-
-
-
-
-
-
     </div>
     <!-- dialog -->
     <el-dialog :title="channelDialogType === '01' ? '添加渠道' : '删除渠道'" :visible.sync="channelPop" width="1100px" @close="resetForm('channelForm')">
@@ -294,9 +278,11 @@ import entryName from '../../components/entryName'
 import { validateLength, validateMobile, validateSelect } from '../../common/fromVerification'
 import TransferCusterDialog from "./components/TransferCuster";
 import PrincipalTable from "./components/PrincipalTable";
+import ChannelTree from "./components/ChannelTree";
 export default {
   name: 'ChannelUser',
   components: {
+    ChannelTree,
     TransferCusterDialog,
 	  PrincipalTable,
     entryName
@@ -426,6 +412,9 @@ export default {
     }
   },
   methods: {
+    addStores() {
+      alert('添加门店逻辑')
+    },
     addStoreManagement () {
       if (this.agencyTeamDataChannelId === '') {
         this.$message.error('请选择或添加渠道')
