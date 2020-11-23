@@ -2,22 +2,26 @@
   .ChannelTree
     .tree
       el-tree(
-        :data="tree"
+        :data="treeData"
         :props="defaultProps"
         @node-click="handleNodeClick"
         :highlight-current="true"
+        :expand-on-click-node="false"
       )
         span(class="custom-tree-node" slot-scope="{ node, data }") {{ node.label }}
           span
             el-dropdown(trigger="click" size="small")
               i(class="el-icon-more")
               el-dropdown-menu(slot="dropdown")
-                el-dropdown-item(@click="handleEditChannel") 编辑渠道
-                el-dropdown-item(@click="handleStopChannel") 停用渠道
-                el-dropdown-item(@click="handleDelChannel") 删除渠道
-                el-dropdown-item(@click="handleEditStore") 编辑门店
-                el-dropdown-item(@click="handleStopStore") 停用门店
-                el-dropdown-item(@click="handleDelStore") 删除门店
+                el-dropdown-item(v-if="data.type === 'channel'" @click.native="handleEditChannel(node, data)") 编辑渠道
+                el-dropdown-item(v-if="data.type === 'channel'" v-show="data.effectivity === 0" @click.native="handleStopChannel(node, data)") 停用渠道
+                el-dropdown-item(v-if="data.type === 'channel'" v-show="data.effectivity === -1" @click.native="handleStopChannel(node, data)") 启用渠道
+                el-dropdown-item(v-if="data.type === 'channel'" @click.native="handleDelChannel(node, data)") 删除渠道
+                el-dropdown-item(v-if="data.type === 'channel'" @click.native="handleAddStore(node, data)") 添加门店
+                el-dropdown-item(v-if="data.type === 'store'" @click.native="handleEditStore(node, data)") 编辑门店
+                el-dropdown-item(v-if="data.type === 'store'" v-show="data.effectivity === 0" @click.native="handleStopStore(node, data)") 停用门店
+                el-dropdown-item(v-if="data.type === 'store'" v-show="data.effectivity === -1" @click.native="handleStopStore(node, data)") 启用门店
+                el-dropdown-item(v-if="data.type === 'store'" @click.native="handleDelStore(node, data)") 删除门店
 
 
 
@@ -26,16 +30,21 @@
 <script>
   export default {
     name: "ChannelTree",
+	  props: {
+		  treeData: {
+		  	required: true
+		  }
+	  },
     data() {
       return {
         defaultProps: {
-          children: 'children',
-          label: 'label'
+          children: 'stores',
+          label: 'name'
         },
         tree: [{
-          label: '一级 1',
+          label: '渠道',
           children: [{
-            label: '二级 1-1',
+            label: '门店',
 
           }]
         }],
@@ -44,11 +53,30 @@
     methods: {
       // 点击树的某个子结点
       handleNodeClick(data) {
-        console.log(data)
+	    	this.$emit("nodeClick", data)
       },
-      handleEditChannel(node, data) {
-        console.log(node, data)
-      }
+	    handleEditChannel(node, data) {
+		    this.$emit("editChannel", data)
+	    },
+	    handleStopChannel(node, data) {
+		    this.$emit("stopChannel", data)
+	    },
+	    handleDelChannel(node, data) {
+		    this.$emit("delChannel", data)
+	    },
+	    handleAddStore(node, data) {
+		    this.$emit("addStore", data)
+	    },
+	    handleEditStore(node, data) {
+		    this.$emit("editStore", data)
+	    },
+	    handleStopStore(node, data) {
+		    this.$emit("stopStore", data)
+	    },
+	    handleDelStore(node, data) {
+		    this.$emit("delStore", data)
+	    },
+
     }
   }
 </script>

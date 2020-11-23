@@ -8,7 +8,7 @@ const options = {
   lock: true,
   text: '努力加载中...',
   spinner: 'el-icon-loading',
-  background: 'rgba(0, 0, 0, 0.9)',
+  background: 'rgba(255, 255, 255, 0.9)',
   zIndex: '50000'
 }
 // 全局的 axios 默认值
@@ -291,3 +291,7 @@ export const getReceiveCommissionHistoryList = params => { return axios.get(`${b
 export const deletReceiveCommission = params => { return axios.delete(`${base}/manager/commission/delete/CommissionHistory/${params}`).then(res => res.data) }
 // 注册用户 佣金账户
 export const getBank = params => { return axios.get(`${base}/manager/bank/${params}`).then(res => res.data) }
+
+
+// 查询渠道负责人
+export const getChannelPrincipal = params => { return axios.get(`${base}/manager/bank/${params.id}?`).then(res => res.data) }

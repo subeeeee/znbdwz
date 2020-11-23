@@ -91,7 +91,7 @@ const options = {
   lock: true,
   text: '努力加载中...',
   spinner: 'el-icon-loading',
-  background: 'rgba(0, 0, 0, 0.9)',
+  background: 'rgba(255, 255, 255, 0.9)',
   zIndex: '50000'
 }
 export default {

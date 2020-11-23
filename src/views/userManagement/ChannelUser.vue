@@ -20,24 +20,26 @@
         <div class="main-title">
           <span>渠道列表</span>
           <span class="main-title-form">
-            <el-dropdown trigger="click" size="small">
-              <el-button type="primary" icon="el-icon-plus">添加</el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="addChannelManagement">渠道</el-dropdown-item>
-                <el-dropdown-item @click.native="addStores">门店</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-button type="primary" icon="el-icon-plus" @click="addChannelManagement">添加</el-button>
           </span>
         </div>
         <div class="tab-bar-cont">
-          <channel-tree></channel-tree>
+          <channel-tree
+	          :treeData="teamChannelList"
+	          @nodeClick="handleNodeClick"
+	          @editChannel="editChannel"
+	          @stopChannel="stopChannel"
+	          @delChannel="delChannel"
+	          @addStore="addStore"
+	          @editStore="editStore"
+	          @stopStore="stopStore"
+	          @delStore="delStore"
+          ></channel-tree>
         </div>
       </div>
 
 
-	    <el-tabs  class="tab-cont-warp" v-model="tabsActiveName" type="card">
-		    <el-tab-pane label="渠道门店" name="channel">
-			    <div class="tab-cont" v-show="isStoreList">
+			    <!--<div class="tab-cont" v-show="isStoreList">
 				    <div class="main-title">
           <span class="main-title-form">
             <el-button type="primary" @click="addStoreManagement" v-if="channelStatus === 0" icon="el-icon-plus">添加门店</el-button>
@@ -52,7 +54,7 @@
 							    <el-button type="text" size="small" @click="managerAgencyTeamStoresAssistantsclick(scope.row)">{{scope.row.storeAssistantNum}}个</el-button>
 						    </template>
 					    </el-table-column>
-					    <!--          TODO 报备客户字段 11-->
+					    &lt;!&ndash;          TODO 报备客户字段 11&ndash;&gt;
 					    <el-table-column prop="storePrincipalMobile" label="报备客户" width="120"></el-table-column>
 					    <el-table-column label="门店状态" width="100">
 						    <template slot-scope="scope">
@@ -80,67 +82,72 @@
 					    layout="prev, pager, next, jumper"
 					    :total="agencyTeamPage.total">
 				    </el-pagination>
+			    </div>-->
+	    <div class="tab-bar-right">
+
+		    <div class="tab-cont" v-show="showType === 'store'">
+			    <div class="main-title">
+				    <span>{{storeInfo.storeName}}</span>
+				    <span class="main-title-form">
+			        <ul class="search-user">
+			          <li><el-input v-model.trim="searchStoreClerkData.name" placeholder="用户姓名" maxlength="50"></el-input></li>
+			          <li><el-input v-model.trim="searchStoreClerkData.mobile" placeholder="注册号码" maxlength="11"></el-input></li>
+			          <li><el-button type="primary" class="search-submit" @click="managerAgencyTeamStoresAssistants(false)" icon="el-icon-search">搜索</el-button></li>
+			        </ul>
+			      </span>
 			    </div>
-			    <div class="tab-cont" v-show="isUserList">
-				    <div class="main-title">
-					    <span>{{storeInfo.storeName}}</span>
-					    <span class="main-title-form">
-            <ul class="search-user">
-              <li><el-input v-model.trim="searchStoreClerkData.name" placeholder="用户姓名" maxlength="50"></el-input></li>
-              <li><el-input v-model.trim="searchStoreClerkData.mobile" placeholder="注册号码" maxlength="11"></el-input></li>
-              <li><el-button type="primary" class="search-submit" @click="managerAgencyTeamStoresAssistants(false)" icon="el-icon-search">搜索</el-button></li>
-            </ul>
-          </span>
-				    </div>
-				    <el-table :data="storeClerkData" class="tab-cont-table" style="width: calc(100% - 30px);" :style="'border-top:2px solid' + themeColor">
-					    <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-					    <el-table-column label="性别" width="80">
-						    <template slot-scope="scope">
-							    {{scope.row.sex === 0 ? '男' : '女'}}
-						    </template>
-					    </el-table-column>
-					    <el-table-column prop="mobile" label="注册号码" width="120"></el-table-column>
-					    <el-table-column prop="roleTypeName" label="用户角色" width="90"></el-table-column>
-					    <el-table-column prop="createTime" label="注册时间" width="160"></el-table-column>
-					    <el-table-column prop="agencyStatusName" label="用户状态" width="90"></el-table-column>
-					    <!--          TODO 添加报备字段 22-->
-					    <el-table-column prop="agencyStatusName" label="报备客户" width="90"></el-table-column>
-					    <el-table-column label="有效客户" width="100">
-						    <template slot-scope="scope">
-							    {{scope.row.reportedNum}}个
-						    </template>
-					    </el-table-column>
-					    <el-table-column label="管理" fixed="right">
-						    <template slot-scope="scope" v-if="channelStatus === 0">
-							    <el-dropdown trigger="click" size="small" v-show="storeStatusType === 0">
-								    <el-button type="text" size="small">操作</el-button>
-								    <el-dropdown-menu slot="dropdown">
-									    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1">停用</el-dropdown-item>
-									    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 0, '启用')" v-if="scope.row.agencyStatus === 2 || scope.row.agencyStatus === 0">启用</el-dropdown-item>
-									    <el-dropdown-item @click.native="handleTransferCuster(scope.row)">客户转移</el-dropdown-item>
-									    <el-dropdown-item @click.native="deleteAccountsChannel(scope.row, 2)">删除</el-dropdown-item>
-									    <el-dropdown-item @click.native="userInformationPopFun(scope.row)">身份变更</el-dropdown-item>
-								    </el-dropdown-menu>
-							    </el-dropdown>
-						    </template>
-					    </el-table-column>
-				    </el-table>
-				    <el-pagination
-					    @current-change="storeClerkPageJump"
-					    :current-page.sync="storeClerkPage.currentPage"
-					    :page-size="storeClerkPage.pageSize"
-					    layout="prev, pager, next, jumper"
-					    :total="storeClerkPage.total">
-				    </el-pagination>
-			    </div>
-		    </el-tab-pane>
-		    <el-tab-pane label="负责人" name="principal">
-					<principal-table ref="principalTableRef" ></principal-table>
-		    </el-tab-pane>
-	    </el-tabs>
+			    <el-table :data="storeClerkData" class="tab-cont-table" style="width: calc(100% - 30px);" :style="'border-top:2px solid' + themeColor">
+				    <el-table-column prop="name" label="姓名" min-width="120"></el-table-column>
+				    <el-table-column label="性别" min-width="80">
+					    <template slot-scope="scope">
+						    {{scope.row.sex === 0 ? '男' : '女'}}
+					    </template>
+				    </el-table-column>
+				    <el-table-column prop="mobile" label="注册号码" min-width="120"></el-table-column>
+				    <el-table-column prop="roleTypeName" label="用户角色" min-width="90"></el-table-column>
+				    <el-table-column prop="createTime" label="注册时间"min- width="160"></el-table-column>
+				    <el-table-column prop="agencyStatusName" label="用户状态" min-width="90"></el-table-column>
+				    <el-table-column prop="reportedNum" label="报备客户" min-width="90"></el-table-column>
+				    <el-table-column label="有效客户" width="100">
+					    <template slot-scope="scope">
+						    {{scope.row.reportedNum}}个
+					    </template>
+				    </el-table-column>
+				    <el-table-column label="管理" fixed="right" width="90">
+					    <template slot-scope="scope" v-if="channelStatus === 0">
+						    <el-dropdown trigger="click" size="small" v-show="storeStatusType === 0">
+							    <el-button type="text" size="small">操作</el-button>
+							    <el-dropdown-menu slot="dropdown">
+								    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1">停用</el-dropdown-item>
+								    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 0, '启用')" v-if="scope.row.agencyStatus === 2 || scope.row.agencyStatus === 0">启用</el-dropdown-item>
+								    <el-dropdown-item @click.native="handleTransferCuster(scope.row)">客户转移</el-dropdown-item>
+								    <el-dropdown-item @click.native="deleteAccountsChannel(scope.row, 2)">删除</el-dropdown-item>
+								    <el-dropdown-item @click.native="userInformationPopFun(scope.row)">身份变更</el-dropdown-item>
+							    </el-dropdown-menu>
+						    </el-dropdown>
+					    </template>
+				    </el-table-column>
+			    </el-table>
+			    <el-pagination
+				    @current-change="storeClerkPageJump"
+				    :current-page.sync="storeClerkPage.currentPage"
+				    :page-size="storeClerkPage.pageSize"
+				    layout="prev, pager, next, jumper"
+				    :total="storeClerkPage.total">
+			    </el-pagination>
+		    </div>
+	      <principal-table ref="principalTableRef" v-show="showType === 'principal'" :themeColor="themeColor"></principal-table>
+	    </div>
+<!--	    <el-tabs  class="tab-cont-warp" v-model="tabsActiveName" type="card">-->
+<!--		    <el-tab-pane label="渠道门店" name="channel">-->
+<!--		    </el-tab-pane>-->
+<!--		    <el-tab-pane label="负责人" name="principal">-->
+<!--					<principal-table ref="principalTableRef" ></principal-table>-->
+<!--		    </el-tab-pane>-->
+<!--	    </el-tabs>-->
     </div>
     <!-- dialog -->
-    <el-dialog :title="channelDialogType === '01' ? '添加渠道' : '删除渠道'" :visible.sync="channelPop" width="1100px" @close="resetForm('channelForm')">
+    <el-dialog :title="channelDialogType === '01' ? '添加渠道' : '编辑渠道'" :visible.sync="channelPop" width="1100px" @close="resetForm('channelForm')">
       <el-form>
         <el-form-item style="padding-left:10px;">
           <el-checkbox v-model="channelForm.multiLogin">是否允许多设备登录</el-checkbox>
@@ -269,6 +276,7 @@
     </el-dialog>
     <!--  -->
     <transfer-custer-dialog ref="transferCusterDialogRef" :is-show.sync="isShowTransfer"></transfer-custer-dialog>
+	  <add-store-dialog ref="addStoreDialog" :is-show.sync="isShowAddStoreDialog"></add-store-dialog>
   </div>
 </template>
 
@@ -279,9 +287,11 @@ import { validateLength, validateMobile, validateSelect } from '../../common/fro
 import TransferCusterDialog from "./components/TransferCuster";
 import PrincipalTable from "./components/PrincipalTable";
 import ChannelTree from "./components/ChannelTree";
+import AddStoreDialog from "./components/AddStoreDialog";
 export default {
   name: 'ChannelUser',
   components: {
+	  AddStoreDialog,
     ChannelTree,
     TransferCusterDialog,
 	  PrincipalTable,
@@ -289,8 +299,9 @@ export default {
   },
   data() {
     return {
-	    tabsActiveName: 'principal',   // 渠道门店:channel 负责人:principal
+    	showType: 'store',
       isShowTransfer: false,
+	    isShowAddStoreDialog: false,
       search: {
         projectId: '',
         channelType: ''
@@ -412,20 +423,42 @@ export default {
     }
   },
   methods: {
-    addStores() {
-      alert('添加门店逻辑')
-    },
-    addStoreManagement () {
-      if (this.agencyTeamDataChannelId === '') {
-        this.$message.error('请选择或添加渠道')
-      } else {
-        this.isChannelPrincipalMobile = false
-        this.addManagerAgencyTeamStoresData.storeName = ''
-        this.addManagerAgencyTeamStoresData.storePrincipalName = ''
-        this.addManagerAgencyTeamStoresData.channelPrincipalMobile = ''
-        this.managerAgencyTeamChannel()
-        this.storePop = true
-      }
+	  handleNodeClick(data) {
+		  if(data.children) {
+			  this.showType = 'principal'
+		  } else {
+		  	this.showType = 'store'
+		  }
+	  },
+	  editChannel(data) {
+	  	this.getManagerAgencyTeamChannel(data.id)
+	  },
+	  stopChannel(data) {
+	  	this.ManagerAgencyTeamChannelConfirm(data)
+	  },
+	  delChannel(data) {
+	  	this.deleteChannelInfo(data)
+	  },
+	  addStore(data) {
+	  	this.addStoreManagement(data)
+	  },
+	  editStore(data) {
+	  	this.editStoreManagement(data)
+	  },
+	  stopStore(data) {
+	  	this.changeAgencyTeamStoresConfirm(data)
+	  },
+	  delStore(data) {
+	  	this.deleteStoreInfo(data)
+	  },
+    addStoreManagement (data) {
+      this.isChannelPrincipalMobile = false
+      this.addManagerAgencyTeamStoresData.storeName = ''
+      this.addManagerAgencyTeamStoresData.storePrincipalName = ''
+      this.addManagerAgencyTeamStoresData.channelPrincipalMobile = ''
+	    this.addManagerAgencyTeamStoresData.channelId = data.id
+      this.managerAgencyTeamChannel()
+      this.storePop = true
     },
     async editStoreManagement (scope) {
       const result = await getManagerAgencyTeamStores(`${scope.storeId}/${scope.tenantId}`)
@@ -484,26 +517,25 @@ export default {
       const result = await managerAgencyTeamChannelList(`?tenantId=${sessionStorage.getItem('tenantId')}&channelType=${this.search.channelType}&projectId=${this.search.projectId}`)
       this.teamChannelList = []
       if (result.data.length) {
-        for (let i = 0; i < result.data.length; i++) {
-          if (i === 0) {
-            let objItem1 = {
-              label: result.data[i].channelName,
-              active: true,
-              id: result.data[i].channelId,
-              channelStatus: result.data[i].channelStatus
-            }
-            this.channelStatus = result.data[i].channelStatus
-            this.teamChannelList.push(objItem1)
-          } else {
-            let objItem = {
-              label: result.data[i].channelName,
-              active: false,
-              id: result.data[i].channelId,
-              channelStatus: result.data[i].channelStatus
-            }
-            this.teamChannelList.push(objItem)
-          }
-        }
+	      result.data.forEach((item, i) => {
+	      	const stores = []
+		      item.stores.forEach(store => {
+			      stores.push({
+				      id: store.storeId,
+				      name: store.storeName,
+				      type: 'store',
+				      effectivity: store.storeStatus
+			      })
+		      })
+		      const channel = {
+			      name: item.channelName,
+			      id: item.channelId,
+			      type: 'channel',
+			      effectivity:item.channelStatus,
+			      stores
+		      }
+		      this.teamChannelList.push(channel)
+	      })
         this.agencyTeamDataChannelId = result.data[0].channelId
         this.managerAgencyTeamStores()
         this.addManagerAgencyTeamStoresData.tenantId = sessionStorage.getItem('tenantId') // 添加门店 租户号
@@ -513,6 +545,7 @@ export default {
         this.agencyTeamPage.currentPage = 1
         this.agencyTeamPage.total = 1
       }
+      console.log(JSON.parse(JSON.stringify(this.teamChannelList)))
     },
     // 渠道名单 编辑
     putManagerAgencyTeamChannel () {
@@ -564,6 +597,7 @@ export default {
         this.channelForm.multiLogin = result.data.multiLogin === 1
         this.channelForm.globleJudge = result.data.globleJudge === 1
         let channelPrincipals = []
+	      result.data.channelPrincipals = result.data.channelPrincipals || []
         for (let i = 0; i < result.data.channelPrincipals.length; i++) {
           channelPrincipals.push({
             principalName: result.data.channelPrincipals[i].principalName,
@@ -662,7 +696,9 @@ export default {
           const result = await addManagerAgencyTeamStores(this.addManagerAgencyTeamStoresData)
           if (result.code === 200) {
             this.storePop = false
-            this.managerAgencyTeamStores()
+            // this.managerAgencyTeamStores()
+	          this.$message.success('添加成功')
+	          this.managerAgencyTeamChannelList()
           } else {
             this.$message.warning(result.message)
           }
@@ -676,7 +712,9 @@ export default {
           const result = await editManagerAgencyTeamStores(this.addManagerAgencyTeamStoresData)
           if (result.code === 200) {
             this.storePop = false
-            this.managerAgencyTeamStores()
+	          this.$message.success('编辑成功')
+	          this.managerAgencyTeamChannelList()
+            // this.managerAgencyTeamStores()
           } else {
             this.$message.warning(result.message)
           }
@@ -941,7 +979,7 @@ export default {
     },
     // 渠道停启用提示
     ManagerAgencyTeamChannelConfirm (item) {
-      let text = item.channelStatus === 0 ? '此操作将禁用该渠道下账号的登录权限，是否继续？' : '此操作将启用该渠道下账号的登录权限，是否继续？'
+      let text = item.effectivity === 0 ? '此操作将禁用该渠道下账号的登录权限，是否继续？' : '此操作将启用该渠道下账号的登录权限，是否继续？'
       this.$confirm(text, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -953,8 +991,8 @@ export default {
     },
     // 停启用渠道
     async changeManagerAgencyTeamChannel (item) {
-      let channelStatus = item.channelStatus === 0 ? -1 : 0
-      this.channelStatus = channelStatus
+      let channelStatus = item.effectivity === 0 ? -1 : 0
+      this.effectivity = channelStatus
       const result = await changeManagerAgencyTeamChannel(`${item.id}/${sessionStorage.getItem('tenantId')}/${channelStatus}`)
       if (result.code === 200) {
         this.$message.success('操作成功')
@@ -965,19 +1003,20 @@ export default {
     },
     // 门店停启用提示
     changeAgencyTeamStoresConfirm (item) {
-      let text = item.storeStatus === 0 ? '此操作将禁用门店下账号的登录权限，是否继续？' : '此操作将启用门店下账号的登录权限，是否继续？'
+      let text = item.effectivity === 0 ? '此操作将禁用门店下账号的登录权限，是否继续？' : '此操作将启用门店下账号的登录权限，是否继续？'
       this.$confirm(text, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+	      this.$message.success('操作成功')
         this.changeAgencyTeamStores(item)
       }).catch(() => {
       })
     },
     // 停启用门店
     async changeAgencyTeamStores (item) {
-      let storeStatus = item.storeStatus === 0 ? -1 : 0
+      let storeStatus = item.effectivity === 0 ? -1 : 0
       const result = await changeAgencyTeamStores(`${item.storeId}/${sessionStorage.getItem('tenantId')}/${storeStatus}`)
       if (result.code === 200) {
         this.$message.success('操作成功')
@@ -1047,7 +1086,6 @@ export default {
 		margin-right: 20px;
 		padding-bottom: 20px;
 		box-sizing: border-box;
-
 		.tab-bar-cont {
 			width: 100%;
 			height: calc(100% - 50px);
@@ -1103,19 +1141,20 @@ export default {
 			}
 		}
 	}
-	.tab-cont-warp{
-		width: calc(100% - 300px);
-		flex: 1;
-		height: 100%;
-	}
-	.tab-cont {
-		background: #f7f7f7;
 
-		.tab-cont-table {
-			margin: 0 auto;
-			border-top: 2px solid #0f8be6;
-			height: 441px;
-			overflow-y: auto
+	.tab-bar-right{
+		flex:1;
+		height: 100%;
+		background: #f7f7f7;
+		.tab-cont {
+			width: 100%;
+			height: 100%;
+			.tab-cont-table {
+				margin: 0 auto;
+				border-top: 2px solid #0f8be6;
+				height: calc(100% - 118px);
+				overflow-y: auto
+			}
 		}
 	}
 }
