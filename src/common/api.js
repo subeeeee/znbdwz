@@ -295,3 +295,17 @@ export const getBank = params => { return axios.get(`${base}/manager/bank/${para
 
 // 查询渠道负责人
 export const getChannelPrincipal = params => { return axios.get(`${base}/manager/bank/${params.id}?`).then(res => res.data) }
+// 转移客户
+export const transferCustomer = data => {
+  return axios.post(`${base}/manager/agencyTeam/transferCustomer`,data).then(res => res.data)
+}
+
+
+// 查询渠道负责人
+export const queryChannelPrincipal = data => {
+  return axios.get(`${base}/manager/agencyTeam/channel/principal/${data.channelId}?tenantId=${data.tenantId}&currentPage=${data.currentPage}&name=${data.name}&mobile=${data.mobile}`).then(res => res.data)
+}
+// 修改渠道负责人
+export const putChannelPrincipal = data => {
+  return axios.put(`${base}/manager/agencyTeam/channel/principal`, data).then(res => res.data)
+}

@@ -26,6 +26,7 @@
         <div class="tab-bar-cont">
           <channel-tree
 	          :treeData="teamChannelList"
+	          :expand-on-click-node="false"
 	          @nodeClick="handleNodeClick"
 	          @editChannel="editChannel"
 	          @stopChannel="stopChannel"
@@ -85,14 +86,14 @@
 			    </div>-->
 	    <div class="tab-bar-right">
 
-		    <div class="tab-cont" v-show="showType === 'store'">
+		    <div class="tab-cont" v-if="showType === 'store'">
 			    <div class="main-title">
-				    <span>{{storeInfo.storeName}}</span>
+				    <span>{{storeInfo.name}}</span>
 				    <span class="main-title-form">
 			        <ul class="search-user">
 			          <li><el-input v-model.trim="searchStoreClerkData.name" placeholder="用户姓名" maxlength="50"></el-input></li>
-			          <li><el-input v-model.trim="searchStoreClerkData.mobile" placeholder="注册号码" maxlength="11"></el-input></li>
-			          <li><el-button type="primary" class="search-submit" @click="managerAgencyTeamStoresAssistants(false)" icon="el-icon-search">搜索</el-button></li>
+			          <li><el-input v-model.trim="searchStoreClerkData.mobile" placeholder="手机号码" maxlength="11"></el-input></li>
+			          <li><el-button type="primary" class="search-submit" @click="managerAgencyTeamStoresAssistants" icon="el-icon-search">搜索</el-button></li>
 			        </ul>
 			      </span>
 			    </div>
@@ -103,7 +104,7 @@
 						    {{scope.row.sex === 0 ? '男' : '女'}}
 					    </template>
 				    </el-table-column>
-				    <el-table-column prop="mobile" label="注册号码" min-width="120"></el-table-column>
+				    <el-table-column prop="mobile" label="手机号码" min-width="120"></el-table-column>
 				    <el-table-column prop="roleTypeName" label="用户角色" min-width="90"></el-table-column>
 				    <el-table-column prop="createTime" label="注册时间"min- width="160"></el-table-column>
 				    <el-table-column prop="agencyStatusName" label="用户状态" min-width="90"></el-table-column>
@@ -136,7 +137,15 @@
 				    :total="storeClerkPage.total">
 			    </el-pagination>
 		    </div>
-	      <principal-table ref="principalTableRef" v-show="showType === 'principal'" :themeColor="themeColor"></principal-table>
+	      <principal-table
+		      ref="principalTableRef"
+		      v-if="showType === 'principal'"
+		      :themeColor="themeColor"
+		      :channel-id="currentChannelId"
+		      @transferCuster="handleTransferCuster"
+		      @switch="switchAccountsChannel"
+		      @delete="deleteAccountsChannel"
+	      ></principal-table>
 	    </div>
 <!--	    <el-tabs  class="tab-cont-warp" v-model="tabsActiveName" type="card">-->
 <!--		    <el-tab-pane label="渠道门店" name="channel">-->
@@ -275,23 +284,48 @@
       </span>
     </el-dialog>
     <!--  -->
-    <transfer-custer-dialog ref="transferCusterDialogRef" :is-show.sync="isShowTransfer"></transfer-custer-dialog>
-	  <add-store-dialog ref="addStoreDialog" :is-show.sync="isShowAddStoreDialog"></add-store-dialog>
+    <transfer-custer-dialog
+	    ref="transferCusterDialogRef"
+	    :is-show.sync="isShowTransfer"
+	    :reported-no="transferReportedNum"
+	    :from-user-id="fromUserId"
+	    :treeData="teamChannelList"
+    ></transfer-custer-dialog>
   </div>
 </template>
 
 <script>
-import { managerAgencyTeamChannelChannelTypes, managerAgencyTeamChannelList, postManagerAgencyTeamChannel, putManagerAgencyTeamChannel, projectsProject, projectsManagerProject, getManagerAgencyTeamChannel, deleteManagerAgencyTeamChannel, managerAgencyTeamStores, addManagerAgencyTeamStores, editManagerAgencyTeamStores, managerAgencyTeamChannel, getManagerAgencyTeamStores, delManagerAgencyTeamStores, managerAgencyTeamStoresAssistants, accountsChannel, accountsIdentity, managerAgencyTeamChannelOptions, managerAgencyTeamStoresOptions, putAccountsIdentity, changeManagerAgencyTeamChannel, changeAgencyTeamStores } from '../../common/api'
+import {
+	managerAgencyTeamChannelChannelTypes,
+	managerAgencyTeamChannelList,
+	postManagerAgencyTeamChannel,
+	putManagerAgencyTeamChannel,
+	projectsProject,
+	projectsManagerProject,
+	getManagerAgencyTeamChannel,
+	deleteManagerAgencyTeamChannel,
+	managerAgencyTeamStores,
+	addManagerAgencyTeamStores,
+	editManagerAgencyTeamStores,
+	managerAgencyTeamChannel,
+	getManagerAgencyTeamStores,
+	delManagerAgencyTeamStores,
+	managerAgencyTeamStoresAssistants,
+	accountsChannel,
+	accountsIdentity,
+	managerAgencyTeamChannelOptions,
+	managerAgencyTeamStoresOptions,
+	putAccountsIdentity,
+	changeManagerAgencyTeamChannel,
+	changeAgencyTeamStores } from '../../common/api'
 import entryName from '../../components/entryName'
 import { validateLength, validateMobile, validateSelect } from '../../common/fromVerification'
 import TransferCusterDialog from "./components/TransferCuster";
 import PrincipalTable from "./components/PrincipalTable";
 import ChannelTree from "./components/ChannelTree";
-import AddStoreDialog from "./components/AddStoreDialog";
 export default {
   name: 'ChannelUser',
   components: {
-	  AddStoreDialog,
     ChannelTree,
     TransferCusterDialog,
 	  PrincipalTable,
@@ -299,9 +333,11 @@ export default {
   },
   data() {
     return {
+	    currentChannelId: '',
     	showType: 'store',
       isShowTransfer: false,
-	    isShowAddStoreDialog: false,
+	    transferReportedNum: '',
+	    fromUserId: '',
       search: {
         projectId: '',
         channelType: ''
@@ -369,7 +405,7 @@ export default {
       storeClerkPage: {
         currentPage: 1,
         pageSize: 10,
-        total: 400
+        total: 0
       },
       // 变更身份
       identityData2: [],
@@ -424,10 +460,16 @@ export default {
   },
   methods: {
 	  handleNodeClick(data) {
-		  if(data.children) {
+		  if(data.type === 'channel') {
 			  this.showType = 'principal'
-		  } else {
+			  this.currentChannelId = data.id
+			  this.$nextTick(() => {
+				  this.$refs.principalTableRef.queryList()
+			  })
+		  } else if(data.type === 'store') {
+		  	this.storeInfo = data
 		  	this.showType = 'store'
+			  this.managerAgencyTeamStoresAssistantsclick(data)
 		  }
 	  },
 	  editChannel(data) {
@@ -460,11 +502,11 @@ export default {
       this.managerAgencyTeamChannel()
       this.storePop = true
     },
-    async editStoreManagement (scope) {
-      const result = await getManagerAgencyTeamStores(`${scope.storeId}/${scope.tenantId}`)
+    async editStoreManagement (data) {
+      const result = await getManagerAgencyTeamStores(`${data.id}/${data.tenantId}`)
       if (result.code === 200) {
-        this.addManagerAgencyTeamStoresData.storeId = scope.storeId
-        this.addManagerAgencyTeamStoresData.storePrincipalUserId = scope.storePrincipalUserId
+        this.addManagerAgencyTeamStoresData.storeId = data.id
+        this.addManagerAgencyTeamStoresData.storePrincipalUserId = result.data.storePrincipalUserId
         this.addManagerAgencyTeamStoresData.storeName = result.data.storeName
         this.addManagerAgencyTeamStoresData.storePrincipalName = result.data.storePrincipalName
         this.addManagerAgencyTeamStoresData.channelPrincipalMobile = result.data.storePrincipalMobile
@@ -524,18 +566,22 @@ export default {
 				      id: store.storeId,
 				      name: store.storeName,
 				      type: 'store',
-				      effectivity: store.storeStatus
+				      effectivity: store.storeStatus,
+				      tenantId: item.tenantId
 			      })
 		      })
 		      const channel = {
 			      name: item.channelName,
 			      id: item.channelId,
 			      type: 'channel',
+			      tenantId: item.tenantId,
 			      effectivity:item.channelStatus,
 			      stores
 		      }
 		      this.teamChannelList.push(channel)
 	      })
+	      // 进入页面展示第一个渠道的负责人
+	      this.handleNodeClick(this.teamChannelList[0])
         this.agencyTeamDataChannelId = result.data[0].channelId
         this.managerAgencyTeamStores()
         this.addManagerAgencyTeamStoresData.tenantId = sessionStorage.getItem('tenantId') // 添加门店 租户号
@@ -545,7 +591,6 @@ export default {
         this.agencyTeamPage.currentPage = 1
         this.agencyTeamPage.total = 1
       }
-      console.log(JSON.parse(JSON.stringify(this.teamChannelList)))
     },
     // 渠道名单 编辑
     putManagerAgencyTeamChannel () {
@@ -722,32 +767,36 @@ export default {
       })
     },
     // 删除 店铺 提示
-    deleteStoreInfo (scope) {
+    deleteStoreInfo (data) {
       this.$confirm('是否将该店铺删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.delManagerAgencyTeamStores(scope)
+        this.delManagerAgencyTeamStores(data)
       }).catch(() => {
       })
     },
-    async delManagerAgencyTeamStores (scope) {
-      const result = await delManagerAgencyTeamStores(`${scope.storeId}/${scope.tenantId}/1`)
+    async delManagerAgencyTeamStores (data) {
+      const result = await delManagerAgencyTeamStores(`${data.id}/${data.tenantId}/1`)
       if (result.code === 200) {
-        this.managerAgencyTeamStores()
+	      this.managerAgencyTeamChannelList()
       } else if (result.code !== 200 && result.code !== 401) {
         this.$message.error(result.message)
       }
     },
     // 门店店员列表
-    managerAgencyTeamStoresAssistantsclick (scope) {
-      this.storeInfo = scope
-      this.storeStatusType = scope.storeStatus
-      this.managerAgencyTeamStoresAssistants()
+    managerAgencyTeamStoresAssistantsclick (data) {
+      this.storeInfo = data
+      this.storeStatusType = data.effectivity
+      this.managerAgencyTeamStoresAssistants(data)
     },
     async managerAgencyTeamStoresAssistants () {
-      const result = await managerAgencyTeamStoresAssistants(`${this.storeInfo.storeId}`, this.storeClerkPage.currentPage, `&name=${this.searchStoreClerkData.name}&mobile=${this.searchStoreClerkData.mobile}`)
+	  	if(!this.storeInfo.id) {
+	  		this.$message.warning('请选择门店')
+				return
+		  }
+      const result = await managerAgencyTeamStoresAssistants(`${this.storeInfo.id}`, this.storeClerkPage.currentPage, `&name=${this.searchStoreClerkData.name}&mobile=${this.searchStoreClerkData.mobile}`)
       if (result.code === 200) {
         this.storeClerkData = result.data
         this.storeClerkPage.currentPage = result.page.currentPage
@@ -759,11 +808,20 @@ export default {
       }
     },
     handleTransferCuster(row) {
-      this.$confirm('此操作将转移选中用户下所有报备客户，且会更新客户报备人，是否继续？', '提示', {
+	    const h = this.$createElement;
+      this.$msgbox({
+	      title: '提示',
+	      message: h('div', null, [
+		      h('div', null, '此操作将转移选中用户下所有报备客户，且会更新客户报备人，是否继续？ '),
+		      h('div', { style: 'font-weight: 500;padding: 10px; font-size: 20px' }, `报备客户数: ${row.reportedNum}`)
+	      ]),
+	      showCancelButton: true,
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+      	this.fromUserId = row.userId
+      	this.transferReportedNum = row.reportedNum
         this.isShowTransfer = true
       })
     },

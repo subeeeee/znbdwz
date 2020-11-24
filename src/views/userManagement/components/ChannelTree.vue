@@ -6,11 +6,11 @@
         :props="defaultProps"
         @node-click="handleNodeClick"
         :highlight-current="true"
-        :expand-on-click-node="false"
+        :expand-on-click-node="expandOnClickNode"
       )
         span(class="custom-tree-node" slot-scope="{ node, data }") {{ node.label }}
-          span
-            el-dropdown(trigger="click" size="small")
+          span(@click.stop="()=> {}")
+            el-dropdown(trigger="click" size="small" v-if="isShowEdit")
               i(class="el-icon-more")
               el-dropdown-menu(slot="dropdown")
                 el-dropdown-item(v-if="data.type === 'channel'" @click.native="handleEditChannel(node, data)") 编辑渠道
@@ -31,8 +31,16 @@
   export default {
     name: "ChannelTree",
 	  props: {
+		  expandOnClickNode: {
+		  	type: Boolean,
+			  default: true
+		  },
 		  treeData: {
 		  	required: true
+		  },
+		  isShowEdit: {
+		  	type: Boolean,
+			  default: true
 		  }
 	  },
     data() {
