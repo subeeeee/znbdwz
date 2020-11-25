@@ -55,7 +55,6 @@
 							    <el-button type="text" size="small" @click="managerAgencyTeamStoresAssistantsclick(scope.row)">{{scope.row.storeAssistantNum}}个</el-button>
 						    </template>
 					    </el-table-column>
-					    &lt;!&ndash;          TODO 报备客户字段 11&ndash;&gt;
 					    <el-table-column prop="storePrincipalMobile" label="报备客户" width="120"></el-table-column>
 					    <el-table-column label="门店状态" width="100">
 						    <template slot-scope="scope">
@@ -228,10 +227,10 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="店长查看客户：" class="must-fill" prop="managerCheckCustomerRule">
-              <el-radio-group v-model="addManagerAgencyTeamStoresData.managerCheckCustomerRule">
-                <el-radio label="01">全号查看</el-radio>
-                <el-radio label="02">隐号查看</el-radio>
+            <el-form-item label="店长查看客户：" class="must-fill" prop="canViewCustomerMobile">
+              <el-radio-group v-model="addManagerAgencyTeamStoresData.canViewCustomerMobile">
+                <el-radio :label="1">全号查看</el-radio>
+                <el-radio :label="0">隐号查看</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -331,6 +330,11 @@ export default {
 	  PrincipalTable,
     entryName
   },
+	computed: {
+		principalTableRef() {
+			return this.$refs.principalTableRef
+		}
+	},
   data() {
     return {
 	    currentChannelId: '',
@@ -387,13 +391,13 @@ export default {
         storeName: '', // 门店名称
         storePrincipalName: '', // 门店负责人名称
         channelPrincipalMobile: '', // 门店负责人手机号
-        managerCheckCustomerRule: '' // 店长查看客户
+        canViewCustomerMobile: '' // 店长查看客户
       },
       addManagerAgencyTeamStoresDataVerification: {
         storeName: { validator: validateLength, trigger: 'blur' },
         storePrincipalName: { validator: validateLength, trigger: 'blur' },
         channelPrincipalMobile: { validator: validateMobile, trigger: 'blur' },
-        managerCheckCustomerRule: {required: true, message:'必填项不能为空'}
+	      canViewCustomerMobile: {required: true, message:'必填项不能为空'}
       },
       // 门店店员
       storeInfo: {}, // 门店信息
@@ -464,7 +468,7 @@ export default {
 			  this.showType = 'principal'
 			  this.currentChannelId = data.id
 			  this.$nextTick(() => {
-				  this.$refs.principalTableRef.queryList()
+				  this.principalTableRef.queryList()
 			  })
 		  } else if(data.type === 'store') {
 		  	this.storeInfo = data
@@ -498,6 +502,7 @@ export default {
       this.addManagerAgencyTeamStoresData.storeName = ''
       this.addManagerAgencyTeamStoresData.storePrincipalName = ''
       this.addManagerAgencyTeamStoresData.channelPrincipalMobile = ''
+      this.addManagerAgencyTeamStoresData.canViewCustomerMobile = ''
 	    this.addManagerAgencyTeamStoresData.channelId = data.id
       this.managerAgencyTeamChannel()
       this.storePop = true
@@ -510,6 +515,7 @@ export default {
         this.addManagerAgencyTeamStoresData.storeName = result.data.storeName
         this.addManagerAgencyTeamStoresData.storePrincipalName = result.data.storePrincipalName
         this.addManagerAgencyTeamStoresData.channelPrincipalMobile = result.data.storePrincipalMobile
+        this.addManagerAgencyTeamStoresData.canViewCustomerMobile = result.data.canViewCustomerMobile
         this.isChannelPrincipalMobile = true
         this.managerAgencyTeamChannel()
         this.storePop = true
@@ -587,6 +593,7 @@ export default {
         this.addManagerAgencyTeamStoresData.tenantId = sessionStorage.getItem('tenantId') // 添加门店 租户号
         this.addManagerAgencyTeamStoresData.channelId = result.data[0].channelId // 添加门店 门店所属渠道
       } else {
+	      this.principalTableRef && this.principalTableRef.resetTable()
         this.agencyTeamData = []
         this.agencyTeamPage.currentPage = 1
         this.agencyTeamPage.total = 1
@@ -780,6 +787,8 @@ export default {
     async delManagerAgencyTeamStores (data) {
       const result = await delManagerAgencyTeamStores(`${data.id}/${data.tenantId}/1`)
       if (result.code === 200) {
+      	this.$message.success('操作成功')
+	      this.principalTableRef.queryList()
 	      this.managerAgencyTeamChannelList()
       } else if (result.code !== 200 && result.code !== 401) {
         this.$message.error(result.message)
@@ -850,6 +859,7 @@ export default {
     async accountsChannel (scope, status) {
       const result = await accountsChannel(`${scope.userId}/${status}`)
       if (result.code === 200) {
+      	this.$message.success('操作成功')
         this.managerAgencyTeamStoresAssistants()
       } else if (result.code !== 200 && result.code !== 401) {
         this.$message.error(result.message)
@@ -1067,7 +1077,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-	      this.$message.success('操作成功')
         this.changeAgencyTeamStores(item)
       }).catch(() => {
       })

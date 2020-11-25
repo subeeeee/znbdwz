@@ -165,7 +165,10 @@ export default {
 				tenantId: sessionStorage.getItem('tenantId'),
 				projectIds:null
 			})
-			console.log(res)
+			if(res.code === 200) {
+				this.$message.success('转移成功')
+				this.closeDialog()
+			}
 		}
 	}
 }

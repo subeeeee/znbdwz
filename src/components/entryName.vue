@@ -89,8 +89,14 @@ export default {
           if (item.value === this.projectId) projectName = item.label
         })
       }
-      sessionStorage.setItem('projectName', projectName)
-      sessionStorage.setItem('projectId', this.projectId)
+      if(this.projectId === '0') {
+	      sessionStorage.setItem('projectName', '')
+	      sessionStorage.setItem('projectId', '')
+      }else {
+	      sessionStorage.setItem('projectName', projectName)
+	      sessionStorage.setItem('projectId', this.projectId)
+      }
+
       this.$emit('entryName', this.projectId)
     }
   }

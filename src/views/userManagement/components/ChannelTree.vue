@@ -79,6 +79,7 @@
 		    this.$emit("editStore", data)
 	    },
 	    handleStopStore(node, data) {
+      	data.storeId = data.id
 		    this.$emit("stopStore", data)
 	    },
 	    handleDelStore(node, data) {

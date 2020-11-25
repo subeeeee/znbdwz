@@ -3,7 +3,7 @@
 		.principal-title
 			.store-name {{storeName}}
 			.operation
-				el-button(type="primary" class="search-submit" @click="handleEdit" icon="el-icon-plus") 添加负责人
+				el-button(type="primary" class="search-submit" @click="e => handleEdit()" icon="el-icon-plus") 添加负责人
 		el-table(
 			:data="tableData"
 			class="principal-table"
@@ -20,7 +20,7 @@
 					el-dropdown(trigger="click" size="small")
 						el-button(type="text" size="small") 操作
 						el-dropdown-menu(slot="dropdown")
-							el-dropdown-item(@click.native="handleSwitch(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1 || 1") 停用
+							el-dropdown-item(@click.native="handleSwitch(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1") 停用
 							el-dropdown-item(@click.native="handleSwitch(scope.row, 0, '启用')" v-if="scope.row.agencyStatus === 2 || scope.row.agencyStatus === 0") 启用
 							el-dropdown-item(@click.native="handleTransferCuster(scope.row)") 客户转移
 							el-dropdown-item(@click.native="handleEdit(scope.row)") 编辑
@@ -44,11 +44,11 @@
 				el-form(ref="dialigFormRef" :model="dialogForm" :rules="dialogRules" label-width="100px")
 					el-row()
 						el-col(:span="24")
-							el-form-item(label="负责人" prop="name" :maxlength="20" style="width:400px")
-								el-input(placeholder="负责人" v-model="dialogForm.name")
+							el-form-item(label="负责人" prop="name"  style="width:400px")
+								el-input(placeholder="负责人" :maxLength="10" v-model="dialogForm.name")
 						el-col(:span="24")
-							el-form-item(label="电话号码" prop="mobile" :maxlength="20" style="width:400px")
-								el-input(placeholder="电话号码" v-model="dialogForm.mobile")
+							el-form-item(label="电话号码" prop="mobile" style="width:400px")
+								el-input(placeholder="电话号码" :maxLength="11" :disabled="dialogType === '编辑'" v-model="dialogForm.mobile")
 			span( slot="footer" class="dialog-footer")
 				el-row
 					el-col(:span="24"  style="text-align:right")
@@ -63,6 +63,8 @@ import {
 	putChannelPrincipal
 } from  './../../../common/api'
 import { mapGetters } from 'vuex'
+import {validateSelect} from "../../../common/fromVerification";
+import utils from './../../../utils/util'
 export default {
 	name: "PrincipalTable",
 	props: [ 'channelStatus', 'channelId' ],
@@ -72,6 +74,11 @@ export default {
      })
 	},
 	data() {
+		const checkPhoneNo = (rule, value, callback) => {
+			if (!utils.isPhone(value)) {
+				return callback(new Error('请输入正确的电话号码'));
+			}
+		};
 		return {
 			storeName: '',
 			tableData:[],
@@ -101,7 +108,8 @@ export default {
 				],
 
 				mobile: [
-					{required: true, message: '必填项不能为空', trigger:'blur'}
+					{required: true, message: '必填项不能为空', trigger:'blur'},
+					{ validator: checkPhoneNo, trigger: 'blur' }
 				],
 			}
 		}
@@ -117,6 +125,7 @@ export default {
 			this.$emit('delete',row, 2 )
 		},
 		handleEdit(row) {
+			console.log(row)
 			if(row) {
 				this.dialogType = '编辑'
 				this.dialogForm.name = row.name
@@ -137,12 +146,13 @@ export default {
 						tenantId: sessionStorage.getItem('tenantId'),
 						name: this.dialogForm.name,
 						userId: this.dialogForm.userId,
-						mobile: this.dialogForm.name,
+						mobile: this.dialogForm.mobile,
 						teamId: this.channelId
 					})
 					if(res.code === 200) {
 						this.isShow = false
 						this.$message.success('操作成功')
+						this.queryList()
 					}
 				}
 			})
@@ -162,6 +172,9 @@ export default {
 		async queryList() {
 			const res = await queryChannelPrincipal(this.getParams())
 			this.tableData = res.data
+		},
+		resetTable() {
+			this.tableData = []
 		}
 	}
 }

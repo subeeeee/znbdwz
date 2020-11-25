@@ -60,7 +60,11 @@
       <el-table-column prop="reportStatusName" label="报备状态" width="100"></el-table-column>
       <el-table-column prop="reportSourceName" label="渠道类型" width="120"></el-table-column>
       <el-table-column prop="channelName" label="渠道名称" width="140"></el-table-column>
-      <el-table-column prop="reporterName" label="报备人员" width="100"></el-table-column>
+      <el-table-column prop="reporterName" label="报备人员" width="170">
+        <template slot-scope="scope">
+          {{scope.row.reporterName + (scope.row.reporterMobile?("（"+scope.row.reporterMobile+"）"):'')}}
+        </template>
+      </el-table-column>
       <el-table-column prop="memberName" label="置业顾问" width="100"></el-table-column>
       <el-table-column label="操作" fixed="right" class="operate" width="120">
         <template slot-scope="scope">
@@ -79,7 +83,7 @@
       :total="page.total">
     </el-pagination>
     <!-- dialog -->
-    <el-dialog title="查看信息" :visible.sync="commissionsPop" width="800px" class="information_dialog el-dialog-body">
+    <el-dialog title="查看信息" :visible.sync="commissionsPop" width="850px" class="information_dialog el-dialog-body">
       <h3>基础信息</h3>
       <el-form :inline="true" class="commissions">
         <el-form-item label="客户姓名：">{{managerCustomersData.name}}</el-form-item>
@@ -111,7 +115,7 @@
       </el-form>
       <el-form :inline="true" class="commissions">
         <el-form-item label="渠道类型：">{{managerCustomersData.reportSourceName}}</el-form-item>
-        <el-form-item label="报备人员：">{{managerCustomersData.reporterName}}</el-form-item>
+        <el-form-item label="报备人员：">{{managerCustomersData.reporterName + (managerCustomersData.reporterMobile?("（"+managerCustomersData.reporterMobile+"）"):'')}}</el-form-item>
         <el-form-item label="报备有效期：">{{ managerCustomersData.reportStatus === -1?managerCustomersData.effectiveReportTime : '/'}}</el-form-item>
       </el-form>
       <el-form :inline="true" class="commissions">
