@@ -86,7 +86,7 @@ export default {
 			tableData:[],
 			page: {
 				currentPage: 0,
-				pageSize: 0,
+				pageSize: 10,
 				total: 0
 			},
 			search:{
@@ -167,6 +167,7 @@ export default {
 		},
 		currentChange(val){
 			this.page.currentOage = val
+			this.queryList()
 		},
 		getParams() {
 			return {
@@ -180,6 +181,8 @@ export default {
 		async queryList() {
 			const res = await queryChannelPrincipal(this.getParams())
 			this.tableData = res.data
+			this.page.currentPage = res.page.currentPage
+			this.page.total = res.page.recordCount *1
 		},
 		resetTable() {
 			this.tableData = []
