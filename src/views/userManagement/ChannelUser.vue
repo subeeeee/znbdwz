@@ -1147,7 +1147,7 @@ export default {
 	}
 
 	.tab-bar {
-		width: 280px;
+		min-width: 280px;
 		height: 100%;
 		background: #f7f7f7;
 		margin-right: 20px;
@@ -1211,6 +1211,7 @@ export default {
 
 	.tab-bar-right{
 		flex:1;
+		width: calc(100% - 300px);
 		height: 100%;
 		background: #f7f7f7;
 		.tab-cont {
