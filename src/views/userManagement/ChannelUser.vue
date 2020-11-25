@@ -85,7 +85,7 @@
 			    </div>-->
 	    <div class="tab-bar-right">
 
-		    <div class="tab-cont" v-if="showType === 'store'">
+		    <div class="tab-cont" v-show="showType === 'store'">
 			    <div class="main-title">
 				    <span>{{storeInfo.name}}</span>
 				    <span class="main-title-form">
@@ -115,12 +115,12 @@
 				    </el-table-column>
 				    <el-table-column label="管理" fixed="right" width="90">
 					    <template slot-scope="scope" v-if="channelStatus === 0">
-						    <el-dropdown trigger="click" size="small" v-show="storeStatusType === 0">
+						    <el-dropdown trigger="click" size="small">
 							    <el-button type="text" size="small">操作</el-button>
 							    <el-dropdown-menu slot="dropdown">
 								    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1">停用</el-dropdown-item>
 								    <el-dropdown-item @click.native="switchAccountsChannel(scope.row, 0, '启用')" v-if="scope.row.agencyStatus === 2 || scope.row.agencyStatus === 0">启用</el-dropdown-item>
-								    <el-dropdown-item @click.native="handleTransferCuster(scope.row)">客户转移</el-dropdown-item>
+								    <el-dropdown-item @click.native="handleTransferCuster(scope.row)" v-if="scope.row.reportedNum > 0">客户转移</el-dropdown-item>
 								    <el-dropdown-item @click.native="deleteAccountsChannel(scope.row, 2)">删除</el-dropdown-item>
 								    <el-dropdown-item @click.native="userInformationPopFun(scope.row)">身份变更</el-dropdown-item>
 							    </el-dropdown-menu>
@@ -138,7 +138,7 @@
 		    </div>
 	      <principal-table
 		      ref="principalTableRef"
-		      v-if="showType === 'principal'"
+		      v-show="showType === 'principal'"
 		      :themeColor="themeColor"
 		      :channel-id="currentChannelId"
 		      @transferCuster="handleTransferCuster"
@@ -285,10 +285,12 @@
     <!--  -->
     <transfer-custer-dialog
 	    ref="transferCusterDialogRef"
+	    :channel-id="currentChannelId"
 	    :is-show.sync="isShowTransfer"
 	    :reported-no="transferReportedNum"
 	    :from-user-id="fromUserId"
-	    :treeData="teamChannelList"
+	    :treeData="resultTreeData"
+	    @success="transferSuccess"
     ></transfer-custer-dialog>
   </div>
 </template>
@@ -333,6 +335,15 @@ export default {
 	computed: {
 		principalTableRef() {
 			return this.$refs.principalTableRef
+		},
+		resultTreeData() {
+			const tree = []
+			this.teamChannelList.forEach(item =>{
+				if(item.id === this.currentChannelId) {
+					tree.push(item)
+				}
+			})
+			return tree
 		}
 	},
   data() {
@@ -447,8 +458,10 @@ export default {
       },
       checkList: [],
       channelStatus: 0, // 是否停用渠道
-      storeStatusType: 0 // 是否停用门店
+      storeStatusType: 0, // 是否停用门店,
+	    reloadInfo:{}
     }
+
   },
   props: [ 'themeColor' ],
   created () {
@@ -463,7 +476,11 @@ export default {
     }
   },
   methods: {
+	  transferSuccess() {
+	  	this.handleNodeClick(this.reloadInfo)
+	  },
 	  handleNodeClick(data) {
+	  	this.reloadInfo = data
 		  if(data.type === 'channel') {
 			  this.showType = 'principal'
 			  this.currentChannelId = data.id
@@ -473,7 +490,7 @@ export default {
 		  } else if(data.type === 'store') {
 		  	this.storeInfo = data
 		  	this.showType = 'store'
-			  this.managerAgencyTeamStoresAssistantsclick(data)
+			  this.managerAgencyTeamStoresAssistantsclick(this.storeInfo)
 		  }
 	  },
 	  editChannel(data) {
@@ -569,6 +586,7 @@ export default {
 	      	const stores = []
 		      item.stores.forEach(store => {
 			      stores.push({
+				      channelId: item.channelId,
 				      id: store.storeId,
 				      name: store.storeName,
 				      type: 'store',

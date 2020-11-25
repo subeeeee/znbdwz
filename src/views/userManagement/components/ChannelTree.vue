@@ -99,8 +99,17 @@
     font-size: 14px;
     padding-right: 8px;
   }
-  .el-tree {
-    background-color: transparent;
+  .tree{
+	  padding: 0 10px;
   }
+</style>
+<style>
+.el-tree {
+	background-color: transparent;
+}
+.el-tree-node__content{
+	border-top: 1px solid #e5e5e5 !important;
+	padding: 5px 0;
+}
 
 </style>

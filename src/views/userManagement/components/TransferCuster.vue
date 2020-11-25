@@ -13,6 +13,7 @@
 						:treeData="treeData"
 						@nodeClick="handleNodeClick"
 						:is-show-edit="false"
+						:expand-on-click-node="false"
 					)
 				.table
 					.table-content
@@ -55,7 +56,8 @@
 import ChannelTree from "./ChannelTree";
 import {
 	managerAgencyTeamStoresAssistants,
-	transferCustomer
+	transferCustomer,
+	queryChannelPrincipal,
 } from '../../../common/api'
 export default {
 	name: "TransferCusterDialog",
@@ -80,7 +82,9 @@ export default {
 		},
 		treeData: {
 			type: Array,
-			default: () => []
+			default: () => {
+				return []
+			}
 		}
 	},
 	data() {
@@ -106,6 +110,8 @@ export default {
 				total: 0
 			}
 		}
+	},
+	computed: {
 	},
 	mounted() {
 	},
@@ -145,7 +151,25 @@ export default {
 				this.params.id = data.id
 				this.params.effectivity = data.effectivity
 				this.queryPrincipalList()
+			} else {
+				this.page.currentPage = 1
+				this.params.id = data.id
+				this.params.effectivity = data.effectivity
+				this.queryChannelPrincipal()
+
 			}
+		},
+		async queryChannelPrincipal() {
+			const res = await queryChannelPrincipal({
+				currentPage: this.page.currentPage,
+				channelId: this.params.id,
+				name: this.params.name,
+				mobile: this.params.mobile,
+				tenantId: sessionStorage.getItem('tenantId')
+			})
+			this.tableData = res.data
+			this.page.currentPage = res.page.currentPage
+			this.page.total = res.page.recordCount * 1
 		},
 		async queryPrincipalList() {
 			if(!this.params.id) {
@@ -153,6 +177,8 @@ export default {
 			}
 			const res = await managerAgencyTeamStoresAssistants(`${this.params.id}`, this.page.currentPage, `&name=${this.params.name}&mobile=${this.params.mobile}`)
 			this.tableData = res.data
+			this.page.total = res.data.recordCount * 1
+			this.page.currentPage = res.data.currentPage
 
 		},
 		closeDialog() {
@@ -167,6 +193,7 @@ export default {
 			})
 			if(res.code === 200) {
 				this.$message.success('转移成功')
+				this.$emit('success')
 				this.closeDialog()
 			}
 		}

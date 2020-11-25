@@ -22,7 +22,7 @@
 						el-dropdown-menu(slot="dropdown")
 							el-dropdown-item(@click.native="handleSwitch(scope.row, 1, '停用')" v-if="scope.row.agencyStatus === 1") 停用
 							el-dropdown-item(@click.native="handleSwitch(scope.row, 0, '启用')" v-if="scope.row.agencyStatus === 2 || scope.row.agencyStatus === 0") 启用
-							el-dropdown-item(@click.native="handleTransferCuster(scope.row)") 客户转移
+							el-dropdown-item(@click.native="handleTransferCuster(scope.row)" v-if="scope.row.reportedNum > 0") 客户转移
 							el-dropdown-item(@click.native="handleEdit(scope.row)") 编辑
 							el-dropdown-item(@click.native="handleDel(scope.row)") 删除
 
