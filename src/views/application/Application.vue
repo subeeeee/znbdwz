@@ -319,7 +319,7 @@
                      inactive-color="#ccc">
           </el-switch>
         </el-form-item>
-        
+
       </el-form>
       <span slot="footer"
             class="dialog-footer">
@@ -531,15 +531,15 @@ export default {
     // 获取微信链接
     async managerTenantConfigWxMenuUrl () {
       sessionStorage.setItem('projectId', this.projectId)
-      const result = await managerTenantConfigWxMenuUrl(`?tenantId=${sessionStorage.getItem('tenantId')}&projectId=${this.projectId}`)
-      const data = result.data
-      if (result.code === 200) {
+      const res = await managerTenantConfigWxMenuUrl(`?tenantId=${sessionStorage.getItem('tenantId')}&projectId=${this.projectId}`)
+      const data = res.message
+      if (res.code === 200) {
         this.copyLink = data
         this.isButton = true
       } else {
         this.copyLink = ''
         this.isButton = false
-        this.$message.error(result.message)
+        this.$message.error(res.message)
       }
     },
     // 一键复制
