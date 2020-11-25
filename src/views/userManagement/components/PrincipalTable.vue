@@ -41,7 +41,7 @@
 			:show-close="false"
 		)
 			div
-				el-form(ref="dialigFormRef" :model="dialogForm" :rules="dialogRules" label-width="100px")
+				el-form(ref="dialogFormRef" :model="dialogForm" :rules="dialogRules" label-width="100px")
 					el-row()
 						el-col(:span="24")
 							el-form-item(label="负责人" prop="name"  style="width:400px")
@@ -60,7 +60,8 @@
 <script>
 import {
 	queryChannelPrincipal,
-	putChannelPrincipal
+	putChannelPrincipal,
+	postChannelPrincipal,
 } from  './../../../common/api'
 import { mapGetters } from 'vuex'
 import {validateSelect} from "../../../common/fromVerification";
@@ -71,13 +72,14 @@ export default {
 	computed: {
 		...mapGetters({
 			themeColor: 'GET_COLOUR'
-     })
+		})
 	},
 	data() {
 		const checkPhoneNo = (rule, value, callback) => {
 			if (!utils.isPhone(value)) {
 				return callback(new Error('请输入正确的电话号码'));
 			}
+			callback()
 		};
 		return {
 			storeName: '',
@@ -125,7 +127,6 @@ export default {
 			this.$emit('delete',row, 2 )
 		},
 		handleEdit(row) {
-			console.log(row)
 			if(row) {
 				this.dialogType = '编辑'
 				this.dialogForm.name = row.name
@@ -140,15 +141,22 @@ export default {
 			this.isShow = true
 		},
 		handleSubmit() {
-			this.$refs.dialigFormRef.validate(async valid => {
+			this.$refs.dialogFormRef.validate(async valid => {
 				if(valid) {
-					const res = await putChannelPrincipal({
+					const data = {
 						tenantId: sessionStorage.getItem('tenantId'),
 						name: this.dialogForm.name,
 						userId: this.dialogForm.userId,
 						mobile: this.dialogForm.mobile,
 						teamId: this.channelId
-					})
+					}
+					let res = {}
+					if(this.dialogType === '添加') {
+						res = await postChannelPrincipal(data)
+					} else {
+						res = await putChannelPrincipal(data)
+					}
+
 					if(res.code === 200) {
 						this.isShow = false
 						this.$message.success('操作成功')
@@ -181,28 +189,28 @@ export default {
 </script>
 
 <style scoped lang="scss">
- .PrincipalTable {
-	 background-color: #f7f7f7;
-	 height: 100%;
-	 width: 100%;
-	 .principal-title {
-		 display: flex;
-		 box-sizing: border-box;
-		 padding: 10px 15px;
-		 height: 50px;
-		 .store-name {
-			 font-size: 24px;
-			 line-height: 30px;
-			 font-weight: 500;
-		 }
-		 .operation {
-			  padding: 1px;
-		 }
-	 }
-	 .principal-table{
-		 height: calc(100% - 115px);
-		 width: calc(100% - 30px);
-		 margin: 0 auto;
-	 }
- }
+.PrincipalTable {
+	background-color: #f7f7f7;
+	height: 100%;
+	width: 100%;
+	.principal-title {
+		display: flex;
+		box-sizing: border-box;
+		padding: 10px 15px;
+		height: 50px;
+		.store-name {
+			font-size: 24px;
+			line-height: 30px;
+			font-weight: 500;
+		}
+		.operation {
+			padding: 1px;
+		}
+	}
+	.principal-table{
+		height: calc(100% - 115px);
+		width: calc(100% - 30px);
+		margin: 0 auto;
+	}
+}
 </style>

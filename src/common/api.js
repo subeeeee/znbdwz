@@ -309,3 +309,7 @@ export const queryChannelPrincipal = data => {
 export const putChannelPrincipal = data => {
   return axios.put(`${base}/manager/agencyTeam/channel/principal`, data).then(res => res.data)
 }
+// 修改渠道负责人
+export const postChannelPrincipal = data => {
+  return axios.post(`${base}/manager/agencyTeam/channel/principal`, data).then(res => res.data)
+}
