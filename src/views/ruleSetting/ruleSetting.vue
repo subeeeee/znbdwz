@@ -741,8 +741,8 @@ export default {
         modeType: this.rulesReporting.modeType,
         channelIds: this.rulesReporting.channelIds,
         canHideMobile: this.rulesReporting.canHideMobile, // 允许客户到访前隐号报备（遇到疑似重复号码时必须补齐全号）
-        canInvalidCustomer: this.rulesReporting.canInvalidCustomer ? 1 : 0, 
-        canVisitExpire: this.rulesReporting.canVisitExpire ? 1 : 0, 
+        canInvalidCustomer: this.rulesReporting.canInvalidCustomer ? 1 : 0,
+        canVisitExpire: this.rulesReporting.canVisitExpire ? 1 : 0,
         canOldCustomer: this.rulesReporting.canOldCustomer,
         canRepeatReport: this.rulesReporting.canRepeatReport,
         repeatReportNum: this.rulesReporting.repeatReportNum,
@@ -969,6 +969,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+.el-tabs{
+	height:calc(100%);
+}
 .rules-reporting {
   padding: 20px;
   .el-form-item__content {
