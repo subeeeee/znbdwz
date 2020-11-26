@@ -138,7 +138,11 @@ export default {
 				this.params.mobile = this.searchData.inputContent
 				this.params.name = ''
 			}
-			this.queryPrincipalList()
+			if(this.queryListType === 'store') {
+				this.queryPrincipalList()
+			} else {
+				this.queryChannelPrincipal()
+			}
 		},
 		handleCurrentChange(val) {
 			this.page.currentPage = val
