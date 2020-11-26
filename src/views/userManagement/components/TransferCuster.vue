@@ -142,11 +142,16 @@ export default {
 		},
 		handleCurrentChange(val) {
 			this.page.currentPage = val
-			this.queryPrincipalList()
+			if(this.queryListType === 'store') {
+				this.queryPrincipalList()
+			} else {
+				this.queryChannelPrincipal()
+			}
 		},
 		handleNodeClick(data) {
 			this.params.id = ''
-			if(data.type === 'store') {
+			this.queryListType = data.type
+			if(this.queryListType === 'store') {
 				this.page.currentPage = 1
 				this.params.id = data.id
 				this.params.effectivity = data.effectivity

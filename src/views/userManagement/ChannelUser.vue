@@ -481,9 +481,10 @@ export default {
 	  },
 	  handleNodeClick(data) {
 	  	this.reloadInfo = data
+		  this.currentChannelId = data.channelId || data.id
+		  console.log(this.currentChannelId)
 		  if(data.type === 'channel') {
 			  this.showType = 'principal'
-			  this.currentChannelId = data.id
 			  this.$nextTick(() => {
 				  this.principalTableRef.queryList()
 			  })
@@ -1105,7 +1106,8 @@ export default {
       const result = await changeAgencyTeamStores(`${item.storeId}/${sessionStorage.getItem('tenantId')}/${storeStatus}`)
       if (result.code === 200) {
         this.$message.success('操作成功')
-        this.managerAgencyTeamStores()
+        this.managerAgencyTeamChannelList()
+
       } else {
         this.$message.error(result.message)
       }
