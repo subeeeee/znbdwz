@@ -59,7 +59,7 @@
             <el-breadcrumb-item :to="{ path: routerMeta.path }">{{routerMeta.page}}</el-breadcrumb-item>
             <el-breadcrumb-item v-if="routerMeta.pageTitle">{{routerMeta.pageTitle}}</el-breadcrumb-item>
           </el-breadcrumb>
-          <router-view :tenantId='tenantId' :companyId='companyId' :themeColor="theme"></router-view><!-- 内容 -->
+          <router-view :tenantId='tenantId' :companyId='companyId' :themeColor="theme" class="content-warp"></router-view><!-- 内容 -->
         </el-main>
       </el-container>
     </el-container>
@@ -175,5 +175,13 @@ export default {
       &:last-child{color:#fff;font-size:16px;}
     }
   }
+}
+.content-warp{
+	height: calc(100% - 38px);
+	overflow-y: auto;
+	padding-right: 20px;
+}
+.el-main{
+	padding-right: 0;
 }
 </style>
