@@ -63,9 +63,6 @@
       <el-table-column prop="reportSourceName" label="渠道类型" width="120"></el-table-column>
       <el-table-column prop="channelName" label="渠道名称" width="140"></el-table-column>
       <el-table-column prop="reporterName" label="报备人员" width="170">
-        <template slot-scope="scope">
-          {{scope.row.reporterName + (scope.row.reporterMobile?("（"+scope.row.reporterMobile+"）"):'')}}
-        </template>
       </el-table-column>
       <el-table-column prop="memberName" label="置业顾问" width="100"></el-table-column>
       <el-table-column label="操作" fixed="right" class="operate" width="140">
@@ -118,7 +115,7 @@
       </el-form>
       <el-form :inline="true" class="commissions">
         <el-form-item label="渠道类型：">{{managerCustomersData.reportSourceName}}</el-form-item>
-        <el-form-item label="报备人员：">{{managerCustomersData.reporterName + (managerCustomersData.reporterMobile?("（"+managerCustomersData.reporterMobile+"）"):'')}}</el-form-item>
+        <el-form-item label="报备人员：">{{managerCustomersData.reporterName}}</el-form-item>
         <el-form-item label="报备有效期：">{{ managerCustomersData.reportStatus === -1?managerCustomersData.effectiveReportTime : '/'}}</el-form-item>
       </el-form>
       <el-form :inline="true" class="commissions">
