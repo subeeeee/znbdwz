@@ -516,6 +516,7 @@ export default {
 	  	this.deleteStoreInfo(data)
 	  },
     addStoreManagement (data) {
+	    this.agencyTeamDataChannelId = data.id
       this.isChannelPrincipalMobile = false
       this.addManagerAgencyTeamStoresData.storeName = ''
       this.addManagerAgencyTeamStoresData.storePrincipalName = ''
@@ -1286,11 +1287,5 @@ export default {
 .authorized-project .el-form-item__label{width:90px!important;}
 .el-tabs__header{
 	margin: 0!important;
-}
-.el-tabs__content{
-	height: 559px !important;
-	.el-tab-pane{
-		height: 100%;
-	}
 }
 </style>
