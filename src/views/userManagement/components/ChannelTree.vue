@@ -7,6 +7,9 @@
         @node-click="handleNodeClick"
         :highlight-current="true"
         :expand-on-click-node="expandOnClickNode"
+        node-key="id"
+        :default-expanded-keys="openItemList"
+        :default-checked-keys="activeItem"
       )
         span(class="custom-tree-node" slot-scope="{ node, data }") {{ node.label }}
           span(@click.stop="()=> {}")
@@ -31,6 +34,14 @@
   export default {
     name: "ChannelTree",
 	  props: {
+		  openItemList: {
+		  	type: Array,
+			  default: ()=> []
+		  },
+		  activeItem: {
+		  	type: String,
+			  default: ''
+		  },
 		  expandOnClickNode: {
 		  	type: Boolean,
 			  default: true

@@ -43,7 +43,7 @@
         <el-button type="primary" icon="el-icon-download" @click="loadingFun">导 出</el-button>
       </el-col>
     </el-row>
-    <el-table :data="tableData" class="list-table" empty-text="无数据" @selection-change="handleSelectionChange">
+    <el-table :data="tableData" class="list-table"  @selection-change="handleSelectionChange">
       <el-table-column
         type="selection"
         width="55">

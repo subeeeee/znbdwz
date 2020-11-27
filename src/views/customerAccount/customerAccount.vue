@@ -55,7 +55,7 @@
         <el-button type="primary" icon="el-icon-download" @click="loadingFun">导 出</el-button>
       </el-col>
     </el-row>
-    <el-table :data="tableData" class="list-table" empty-text="无数据">
+    <el-table :data="tableData" class="list-table">
       <el-table-column type="index" label="编号" width="50"></el-table-column>
       <el-table-column prop="projectName" label="项目名称" width="150"></el-table-column>
       <el-table-column prop="name" label="姓名" width="100"></el-table-column>

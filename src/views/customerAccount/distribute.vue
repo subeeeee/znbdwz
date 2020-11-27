@@ -41,7 +41,7 @@
         <el-button type="primary" icon="el-icon-download" @click="loadingFun">导 出</el-button>
       </el-col>
     </el-row>
-    <el-table :data="tableData" class="list-table" empty-text="无数据" @selection-change="handleSelectionChange">
+    <el-table :data="tableData" class="list-table" @selection-change="handleSelectionChange">
       <el-table-column
         type="selection"
         width="55">
@@ -128,7 +128,7 @@
           <el-button slot="append" icon="el-icon-search" @click="searchCustomers"></el-button>
         </el-input>
 <!--        @selection-change="handleSelectionChange2" @select="selectCustomer" @select-all="selectCustomerAll"-->
-        <el-table ref="multipleTable" :data="customerList" class="list_table" empty-text="无数据" highlight-current-row @current-change="getCurrentRow" >
+        <el-table ref="multipleTable" :data="customerList" class="list_table" highlight-current-row @current-change="getCurrentRow" >
           <el-table-column width="55">
             <template slot-scope="scope" >
               <el-checkbox v-model="scope.row.checked"></el-checkbox>

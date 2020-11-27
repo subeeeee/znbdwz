@@ -26,6 +26,8 @@
         <div class="tab-bar-cont">
           <channel-tree
 	          :treeData="teamChannelList"
+	          :open-item-list="[ treeOpenId ]"
+	          :active-item="treeActiveId"
 	          :expand-on-click-node="false"
 	          @nodeClick="handleNodeClick"
 	          @editChannel="editChannel"
@@ -348,6 +350,8 @@ export default {
 	},
   data() {
     return {
+	    treeOpenId: '',
+	    treeActiveId: '',
 	    currentChannelId: '',
     	showType: 'store',
       isShowTransfer: false,
@@ -496,21 +500,27 @@ export default {
 		  }
 	  },
 	  editChannel(data) {
+		  this.treeOpenId = data.id
 	  	this.getManagerAgencyTeamChannel(data.id)
+
 	  },
 	  stopChannel(data) {
+		  this.treeOpenId = data.id
 	  	this.ManagerAgencyTeamChannelConfirm(data)
 	  },
 	  delChannel(data) {
 	  	this.deleteChannelInfo(data)
 	  },
 	  addStore(data) {
+		  this.treeOpenId = data.id
 	  	this.addStoreManagement(data)
 	  },
 	  editStore(data) {
+		  this.treeOpenId = data.id
 	  	this.editStoreManagement(data)
 	  },
 	  stopStore(data) {
+		  this.treeOpenId = data.id
 	  	this.changeAgencyTeamStoresConfirm(data)
 	  },
 	  delStore(data) {
@@ -518,6 +528,7 @@ export default {
 	  },
     addStoreManagement (data) {
 	    this.agencyTeamDataChannelId = data.id
+	    this.treeOpenId = data.id
       this.isChannelPrincipalMobile = false
       this.addManagerAgencyTeamStoresData.storeName = ''
       this.addManagerAgencyTeamStoresData.storePrincipalName = ''

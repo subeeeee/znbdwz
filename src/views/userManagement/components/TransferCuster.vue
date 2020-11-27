@@ -138,6 +138,10 @@ export default {
 				this.params.mobile = this.searchData.inputContent
 				this.params.name = ''
 			}
+			if( !this.params.id) {
+				this.$message.warning('请选择渠道或门店')
+				return
+			}
 			if(this.queryListType === 'store') {
 				this.queryPrincipalList()
 			} else {
@@ -153,17 +157,13 @@ export default {
 			}
 		},
 		handleNodeClick(data) {
-			this.params.id = ''
 			this.queryListType = data.type
+			this.page.currentPage = 1
+			this.params.id = data.id
+			this.params.effectivity = data.effectivity
 			if(this.queryListType === 'store') {
-				this.page.currentPage = 1
-				this.params.id = data.id
-				this.params.effectivity = data.effectivity
 				this.queryPrincipalList()
 			} else {
-				this.page.currentPage = 1
-				this.params.id = data.id
-				this.params.effectivity = data.effectivity
 				this.queryChannelPrincipal()
 
 			}
@@ -181,13 +181,10 @@ export default {
 			this.page.total = res.page.recordCount * 1
 		},
 		async queryPrincipalList() {
-			if(!this.params.id) {
-				this.$message.warning('请选择门店')
-			}
 			const res = await managerAgencyTeamStoresAssistants(`${this.params.id}`, this.page.currentPage, `&name=${this.params.name}&mobile=${this.params.mobile}`)
 			this.tableData = res.data
-			this.page.total = res.data.recordCount * 1
-			this.page.currentPage = res.data.currentPage
+			this.page.total = res.page.recordCount * 1
+			this.page.currentPage = res.page.currentPage
 
 		},
 		closeDialog() {
