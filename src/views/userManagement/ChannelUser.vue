@@ -109,12 +109,8 @@
 				    <el-table-column prop="roleTypeName" label="用户角色" min-width="90"></el-table-column>
 				    <el-table-column prop="createTime" label="注册时间"min- width="160"></el-table-column>
 				    <el-table-column prop="agencyStatusName" label="用户状态" min-width="90"></el-table-column>
-				    <el-table-column prop="reportedNum" label="报备客户" min-width="90"></el-table-column>
-				    <el-table-column label="有效客户" width="100">
-					    <template slot-scope="scope">
-						    {{scope.row.reportedNum}}个
-					    </template>
-				    </el-table-column>
+				    <el-table-column prop="reportedNum" label="报备客户(个)" min-width="90"></el-table-column>
+				    <el-table-column prop="effectiveNum" label="有效客户(个)" min-width="90"></el-table-column>
 				    <el-table-column label="管理" fixed="right" width="90">
 					    <template slot-scope="scope" v-if="channelStatus === 0">
 						    <el-dropdown trigger="click" size="small">
