@@ -512,6 +512,7 @@ export default {
 	  },
 	  editStore(data) {
 		  this.treeOpenId = data.id
+		  console.log(data.id)
 	  	this.editStoreManagement(data)
 	  },
 	  stopStore(data) {
@@ -529,7 +530,6 @@ export default {
       this.addManagerAgencyTeamStoresData.storePrincipalName = ''
       this.addManagerAgencyTeamStoresData.channelPrincipalMobile = ''
       this.addManagerAgencyTeamStoresData.canViewCustomerMobile = 0
-      this.addManagerAgencyTeamStoresData.canViewCustomerMobile = ''
 	    this.addManagerAgencyTeamStoresData.channelId = data.id
       this.managerAgencyTeamChannel()
       this.storePop = true
@@ -544,7 +544,7 @@ export default {
         this.addManagerAgencyTeamStoresData.channelPrincipalMobile = result.data.storePrincipalMobile
         this.addManagerAgencyTeamStoresData.canViewCustomerMobile = result.data.canViewCustomerMobile
         this.isChannelPrincipalMobile = true
-        this.managerAgencyTeamChannel()
+        this.managerAgencyTeamChannel(data.channelId)
         this.storePop = true
       } else if (result.code !== 200 && result.code !== 401) {
         this.$message.error(result.message)
@@ -569,8 +569,8 @@ export default {
       this.channelPop = true
     },
     // 新增门店获取渠道名称
-    async managerAgencyTeamChannel () {
-      const result = await managerAgencyTeamChannel(`${this.agencyTeamDataChannelId}`)
+    async managerAgencyTeamChannel (id) {
+      const result = await managerAgencyTeamChannel(`${id || this.agencyTeamDataChannelId}`)
       let arr = []
       for (let i in result.data) {
         arr.push(result.data[i])
