@@ -485,6 +485,7 @@ export default {
 		  console.log(this.currentChannelId)
 		  if(data.type === 'channel') {
 			  this.showType = 'principal'
+			  this.storeInfo = data
 			  this.$nextTick(() => {
 				  this.principalTableRef.queryList()
 			  })
@@ -825,7 +826,7 @@ export default {
 	  		this.$message.warning('请选择门店')
 				return
 		  }
-      const result = await managerAgencyTeamStoresAssistants(`${this.storeInfo.id}`, this.storeClerkPage.currentPage, `&name=${this.searchStoreClerkData.name}&mobile=${this.searchStoreClerkData.mobile}`)
+	    const result = await managerAgencyTeamStoresAssistants(`${this.storeInfo.id}`, this.storeClerkPage.currentPage, `&name=${this.searchStoreClerkData.name}&mobile=${this.searchStoreClerkData.mobile}`)
       if (result.code === 200) {
         this.storeClerkData = result.data
         this.storeClerkPage.currentPage = result.page.currentPage
@@ -880,7 +881,7 @@ export default {
       const result = await accountsChannel(`${scope.userId}/${status}`)
       if (result.code === 200) {
       	this.$message.success('操作成功')
-        this.managerAgencyTeamStoresAssistants()
+	      this.principalTableRef.queryList()
       } else if (result.code !== 200 && result.code !== 401) {
         this.$message.error(result.message)
       }
