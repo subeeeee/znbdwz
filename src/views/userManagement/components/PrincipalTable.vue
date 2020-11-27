@@ -138,6 +138,7 @@ export default {
 				this.dialogForm.mobile = ''
 				this.dialogForm.userId = ''
 			}
+			this.$refs['dialogFormRef'] && this.$refs['dialogFormRef'].resetFields();
 			this.isShow = true
 		},
 		handleSubmit() {

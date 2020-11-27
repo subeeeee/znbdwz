@@ -27,7 +27,7 @@
           <channel-tree
 	          :treeData="teamChannelList"
 	          :open-item-list="[ treeOpenId ]"
-	          :active-item="treeActiveId"
+	          :active-item="[ treeActiveId ]"
 	          :expand-on-click-node="false"
 	          @nodeClick="handleNodeClick"
 	          @editChannel="editChannel"
@@ -347,7 +347,7 @@ export default {
   data() {
     return {
 	    treeOpenId: '',
-	    treeActiveId: '',
+	    treeActiveId: '1',
 	    currentChannelId: '',
     	showType: 'store',
       isShowTransfer: false,
@@ -482,7 +482,6 @@ export default {
 	  handleNodeClick(data) {
 	  	this.reloadInfo = data
 		  this.currentChannelId = data.channelId || data.id
-		  console.log(this.currentChannelId)
 		  if(data.type === 'channel') {
 			  this.showType = 'principal'
 			  this.storeInfo = data
@@ -529,6 +528,7 @@ export default {
       this.addManagerAgencyTeamStoresData.storeName = ''
       this.addManagerAgencyTeamStoresData.storePrincipalName = ''
       this.addManagerAgencyTeamStoresData.channelPrincipalMobile = ''
+      this.addManagerAgencyTeamStoresData.canViewCustomerMobile = 0
       this.addManagerAgencyTeamStoresData.canViewCustomerMobile = ''
 	    this.addManagerAgencyTeamStoresData.channelId = data.id
       this.managerAgencyTeamChannel()
@@ -616,6 +616,7 @@ export default {
 	      })
 	      // 进入页面展示第一个渠道的负责人
 	      this.handleNodeClick(this.teamChannelList[0])
+	      this.treeActiveId = this.teamChannelList[0].id
         this.agencyTeamDataChannelId = result.data[0].channelId
         this.managerAgencyTeamStores()
         this.addManagerAgencyTeamStoresData.tenantId = sessionStorage.getItem('tenantId') // 添加门店 租户号
@@ -888,7 +889,11 @@ export default {
       const result = await accountsChannel(`${scope.userId}/${status}`)
       if (result.code === 200) {
       	this.$message.success('操作成功')
-	      this.principalTableRef.queryList()
+	      if(this.storeInfo.type === 'channel') {
+		      this.principalTableRef.queryList()
+	      } else if(this.storeInfo.type === 'store'){
+		      this.managerAgencyTeamStoresAssistantsclick(this.storeInfo)
+	      }
       } else if (result.code !== 200 && result.code !== 401) {
         this.$message.error(result.message)
       }

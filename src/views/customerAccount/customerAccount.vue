@@ -38,7 +38,7 @@
             <el-option v-for="(item, index) in storeIdData" :key="index" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="报备人员："><el-input v-model.trim="search.reporterName" placeholder="报备人员" maxlength="50"></el-input></el-form-item>
+        <el-form-item label="报备人员："><el-input v-model.trim="search.reporterName" placeholder="报备人员/手机号" maxlength="50"></el-input></el-form-item>
       </el-form>
       <el-form :inline="true" :model="search" class="demo-form-inline-on">
         <el-form-item label="客户信息：" class="customer-information">

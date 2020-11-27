@@ -39,8 +39,8 @@
 			  default: ()=> []
 		  },
 		  activeItem: {
-		  	type: String,
-			  default: ''
+			  type: Array,
+			  default: ()=> []
 		  },
 		  expandOnClickNode: {
 		  	type: Boolean,
